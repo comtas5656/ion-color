@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- バージョン管理用メタタグ（データ更新時はここを変更） -->
-  <meta name="app-version" content="1.0.0">
+  <!-- バージョン管理用メタタグ（1.0.1へ更新） -->
+  <meta name="app-version" content="1.0.1">
   
   <!-- キャッシュ無効化ヘッダー -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -176,8 +176,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 10px;
+      margin-top: 5px;
       width: 100%;
+      padding-bottom: 70px; /* 下部固定ボタン用の余白 */
     }
 
     .qa-card {
@@ -186,15 +187,15 @@
       background-color: #fff;
       border: 2px solid var(--secondary-color);
       border-radius: 12px;
-      padding: 20px;
+      padding: 15px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       text-align: center;
       cursor: pointer;
       user-select: none;
-      min-height: 220px;
+      min-height: 260px; /* 答え表示時との高さ変化を抑える */
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       transition: border-color 0.2s;
       position: relative;
@@ -207,12 +208,12 @@
     .qa-hint {
       font-size: 12px;
       color: #888;
-      margin-top: 15px;
+      margin: 10px 0;
     }
 
     .qa-answer {
-      margin-top: 15px;
-      padding: 12px;
+      margin-top: 10px;
+      padding: 10px;
       background-color: #e8f4fc;
       border-radius: 8px;
       width: 100%;
@@ -227,7 +228,7 @@
 
     /* チェックボックスエリア */
     .review-checkbox-label {
-      margin-top: 15px;
+      margin-top: 10px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -248,7 +249,7 @@
     }
 
     .qa-btn {
-      margin-top: 20px;
+      margin-top: 15px;
       padding: 12px 30px;
       font-size: 16px;
       font-weight: bold;
@@ -257,7 +258,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
       transition: background-color 0.2s;
       width: 100%;
       max-width: 300px;
@@ -270,7 +271,7 @@
     .qa-progress {
       font-size: 14px;
       color: #666;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       font-weight: bold;
     }
 
@@ -301,6 +302,18 @@
 
       .qa-card {
         padding: 15px;
+        min-height: 240px;
+      }
+
+      /* スマホでは「次の問題へ」ボタンを画面下部に固定表示 */
+      .qa-btn {
+        position: fixed;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        max-width: calc(100% - 30px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
       }
     }
   </style>
@@ -348,9 +361,11 @@
     <div class="qa-container">
       <div class="qa-progress" id="qaProgress">進捗: 0 / 0</div>
       <div class="qa-card" id="qaCard">
-        <span class="card-category" id="qaCategory">-</span>
-        <div class="card-name" id="qaName" style="font-size: 20px; margin: 15px 0;">-</div>
-        <div class="card-note" id="qaNote" style="border:none; padding:0; font-size: 13px;">-</div>
+        <div>
+          <span class="card-category" id="qaCategory">-</span>
+          <div class="card-name" id="qaName" style="font-size: 20px; margin: 10px 0;">-</div>
+          <div class="card-note" id="qaNote" style="border:none; padding:0; font-size: 13px;">-</div>
+        </div>
         
         <div id="qaAnswerBox" class="qa-answer hidden">
           <div style="font-size: 12px; color: #555;">【色】</div>
@@ -372,19 +387,17 @@
 
 <script>
   // ==========================================
-  // 自動更新検知システム
+  // 自動更新検知システム（バージョン: 1.0.1）
   // ==========================================
-  const CURRENT_VERSION = "1.0.0"; // 👈 更新時はここを変更（<head>のmetaタグと揃える）
+  const CURRENT_VERSION = "1.0.1";
 
   async function checkAppVersion() {
     try {
-      // タイムスタンプを付与してサーバー上の最新HTMLを取得
       const response = await fetch(`${window.location.href.split('?')[0]}?t=${Date.now()}`, {
         cache: "no-store"
       });
       const text = await response.text();
       
-      // レスポンスからメタタグのバージョン文字列を抽出
       const match = text.match(/<meta\s+name="app-version"\s+content="([^"]+)"/i);
       if (match && match[1]) {
         const serverVersion = match[1];
@@ -399,7 +412,6 @@
     }
   }
 
-  // 画面読み込み完了時にバージョンチェックを実行
   window.addEventListener("DOMContentLoaded", checkAppVersion);
 
   // ==========================================
