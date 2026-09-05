@@ -3,228 +3,274 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>イオン・沈殿の色 暗記カード</title>
-
-  <!-- PWA用の設定タグ -->
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon.png">
-  <meta name="theme-color" content="#007bff">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-
+  <title>無機化学 色の暗記暗記倶楽部</title>
   <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-color: #e9ecef;
+    }
+
     body {
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       margin: 0;
-      background-color: #f4f6f8;
       padding: 20px;
-      box-sizing: border-box;
+      line-height: 1.6;
     }
-    .filter-container {
-      margin-bottom: 15px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
     }
-    .filter-btn {
-      padding: 6px 12px;
-      font-size: 0.85rem;
-      border: 1px solid #ccc;
-      background-color: #fff;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-    .filter-btn.active {
-      background-color: #007bff;
-      color: #fff;
-      border-color: #007bff;
-    }
-    .card {
-      width: 320px;
-      height: 200px;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
+
+    h1 {
       text-align: center;
-      padding: 20px;
-      box-sizing: border-box;
-      position: relative;
+      color: var(--primary-color);
+      margin-bottom: 20px;
     }
-    .category-tag {
-      font-size: 0.8rem;
-      padding: 3px 8px;
-      border-radius: 4px;
-      background-color: #e9ecef;
-      color: #495057;
-      font-weight: bold;
-    }
-    .ion-name {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: #333;
-      margin: auto 0;
-    }
-    .color-container {
-      height: 2.2rem; 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .color-name {
-      font-size: 1.4rem;
-      font-weight: bold;
-      visibility: hidden;
-    }
-    .color-name.show {
-      visibility: visible;
-    }
+
     .controls {
       display: flex;
-      gap: 12px;
-      margin-top: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
     }
-    .btn {
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      background-color: #007bff;
-      color: white;
+
+    select, input {
+      padding: 10px 15px;
+      border: 1px solid #ccc;
       border-radius: 6px;
+      font-size: 16px;
+    }
+
+    select {
+      background-color: #fff;
       cursor: pointer;
     }
-    .btn-secondary {
-      background-color: #6c757d;
+
+    input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      padding: 15px 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .card-category {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      background-color: var(--secondary-color);
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .card-name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: var(--primary-color);
+    }
+
+    .card-color-box {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      background-color: #f1f3f5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .color-label {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .card-note {
+      font-size: 13px;
+      color: #666;
+      margin-top: 8px;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 8px;
+    }
+
+    .count-info {
+      text-align: right;
+      margin-bottom: 10px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .controls {
+        flex-direction: column;
+      }
+      input[type="text"] {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- カテゴリ絞り込みボタン -->
-  <div class="filter-container">
-    <button class="filter-btn active" onclick="filterData('all')">すべて</button>
-    <button class="filter-btn" onclick="filterData('水溶液')">水溶液</button>
-    <button class="filter-btn" onclick="filterData('沈殿')">沈殿</button>
-    <button class="filter-btn" onclick="filterData('錯イオン')">錯イオン</button>
-  </div>
-
-  <div class="card" onclick="toggleColor()">
-    <span class="category-tag" id="tag">水溶液</span>
-    <div class="ion-name" id="ion">Cu²⁺</div>
-    <div class="color-container">
-      <div class="color-name" id="color" style="color: #007bff;">青色</div>
-    </div>
-  </div>
-  <p style="color: #666; font-size: 0.85rem; margin-top: 12px;">カードをタップすると答えが表示されます</p>
+<div class="container">
+  <h1>無機化学 色の暗記データベース</h1>
 
   <div class="controls">
-    <button class="btn btn-secondary" onclick="shuffleData()">シャッフル</button>
-    <button class="btn" onclick="nextCard()">次のカード</button>
+    <select id="categoryFilter">
+      <option value="ALL">すべてのカテゴリー</option>
+      <option value="ハロゲン・ハロゲン化物">ハロゲン・ハロゲン化物</option>
+      <option value="イオン・錯イオン">イオン・錯イオン</option>
+      <option value="沈殿・難溶性塩">沈殿・難溶性塩</option>
+      <option value="気体・単体・結晶">気体・単体・結晶</option>
+      <option value="呈色・検出反応">呈色・検出反応</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="物質名やキーワードで検索...">
   </div>
 
-  <script>
-    // 高校化学・大学受験で必須の主要データ一覧
-    const masterData = [
-      // --- 水溶液の色 ---
-      { name: 'Cu²⁺', color: '青色', code: '#007bff', type: '水溶液' },
-      { name: 'Fe²⁺', color: '淡緑色', code: '#2e7d32', type: '水溶液' },
-      { name: 'Fe³⁺', color: '黄褐色', code: '#8d6e63', type: '水溶液' },
-      { name: 'Mn²⁺', color: '淡赤色（ほぼ無色）', code: '#e91e63', type: '水溶液' },
-      { name: 'Cr³⁺', color: '緑色', code: '#388e3c', type: '水溶液' },
-      { name: 'CrO₄²⁻', color: '黄色', code: '#fbc02d', type: '水溶液' },
-      { name: 'Cr₂O₇²⁻', color: '赤橙色', code: '#e65100', type: '水溶液' },
-      { name: 'MnO₄⁻', color: '赤紫色', code: '#8e24aa', type: '水溶液' },
+  <div class="count-info" id="countInfo">表示中: 0 件</div>
 
-      // --- 主な沈殿の色 ---
-      { name: 'Cu(OH)₂', color: '青白色沈殿', code: '#0288d1', type: '沈殿' },
-      { name: 'CuS', color: '黒色沈殿', code: '#212121', type: '沈殿' },
-      { name: 'Fe(OH)₂', color: '緑白色沈殿', code: '#4fb3bf', type: '沈殿' },
-      { name: 'Fe(OH)₃', color: '赤褐色沈殿', code: '#6d4c41', type: '沈殿' },
-      { name: 'FeS', color: '黒色沈殿', code: '#212121', type: '沈殿' },
-      { name: 'AgCl', color: '白色沈殿', code: '#78909c', type: '沈殿' },
-      { name: 'AgBr', color: '淡黄色沈殿', code: '#fbc02d', type: '沈殿' },
-      { name: 'AgI', color: '黄色沈殿', code: '#fbc02d', type: '沈殿' },
-      { name: 'Ag₂O', color: '褐色沈殿', code: '#5d4037', type: '沈殿' },
-      { name: 'Ag₂S', color: '黒色沈殿', code: '#212121', type: '沈殿' },
-      { name: 'PbCl₂', color: '白色沈殿（熱湯に溶ける）', code: '#78909c', type: '沈殿' },
-      { name: 'PbSO₄', color: '白色沈殿', code: '#78909c', type: '沈殿' },
-      { name: 'PbS', color: '黒色沈殿', code: '#212121', type: '沈殿' },
-      { name: 'BaSO₄', color: '白色沈殿', code: '#78909c', type: '沈殿' },
-      { name: 'CaCO₃', color: '白色沈殿', code: '#78909c', type: '沈殿' },
-      { name: 'ZnS', color: '白色沈殿（中性・塩基性）', code: '#78909c', type: '沈殿' },
+  <div class="grid" id="cardGrid"></div>
+</div>
 
-      // --- 錯イオン・呈色反応 ---
-      { name: '[Cu(NH₃)₄]²⁺', color: '深青色水溶液', code: '#1a237e', type: '錯イオン' },
-      { name: '[Fe(SCN)]²⁺', color: '血赤色水溶液', code: '#b71c1c', type: '錯イオン' },
-      { name: '[Fe(CN)₆]⁴⁻ + Fe³⁺', color: '濃青色沈殿（ベルリン青）', code: '#0d47a1', type: '錯イオン' },
-      { name: '[Fe(CN)₆]³⁻ + Fe²⁺', color: '濃青色沈殿', code: '#0d47a1', type: '錯イオン' },
-      { name: '[Ag(NH₃)₂]⁺', color: '無色水溶液', code: '#546e7a', type: '錯イオン' },
-      { name: '[Zn(NH₃)₄]²⁺', color: '無色水溶液', code: '#546e7a', type: '錯イオン' },
-      { name: '[Al(OH)₄]⁻', color: '無色水溶液', code: '#546e7a', type: '錯イオン' }
-    ];
+<script>
+  // 色データ
+  const colorData = [
+    // ==========================================
+    // 1. ハロゲン単体およびハロゲン化物
+    // ==========================================
+    { category: "ハロゲン・ハロゲン化物", name: "フッ素 F₂", color: "淡黄色", note: "常温で気体" },
+    { category: "ハロゲン・ハロゲン化物", name: "塩素 Cl₂", color: "黄緑色", note: "常温で気体・刺激臭" },
+    { category: "ハロゲン・ハロゲン化物", name: "臭素 Br₂", color: "赤褐色", note: "常温で液体" },
+    { category: "ハロゲン・ハロゲン化物", name: "ヨウ素 I₂", color: "黒紫色", note: "常温で固体・昇華性" },
+    { category: "ハロゲン・ハロゲン化物", name: "塩化銀 AgCl", color: "白色", note: "沈殿・水に不溶・感光性" },
+    { category: "ハロゲン・ハロゲン化物", name: "臭化銀 AgBr", color: "淡黄色", note: "沈殿・水に不溶・感光性" },
+    { category: "ハロゲン・ハロゲン化物", name: "ヨウ化銀 AgI", color: "黄色", note: "沈殿・水に不溶・感光性" },
+    { category: "ハロゲン・ハロゲン化物", name: "フッ化銀 AgF", color: "黄色（※固体は褐色〜黄褐色）", note: "水に可溶（他のハロゲン化銀と異なる）" },
 
-    let currentList = [...masterData];
-    let currentIndex = 0;
+    // ==========================================
+    // 2. 水溶液・イオン・錯イオン
+    // ==========================================
+    { category: "イオン・錯イオン", name: "鉄(II)イオン Fe²⁺", color: "淡緑色", note: "水溶液" },
+    { category: "イオン・錯イオン", name: "鉄(III)イオン Fe³⁺", color: "黄褐色", note: "水溶液" },
+    { category: "イオン・錯イオン", name: "テトラアクア銅(II)イオン [Cu(H₂O)₄]²⁺", color: "青色", note: "水溶液" },
+    { category: "イオン・錯イオン", name: "テトラアンミン銅(II)イオン [Cu(NH₃)₄]²⁺", color: "深青色", note: "過剰のアンモニア水追加で溶解" },
+    { category: "イオン・錯イオン", name: "チオシアン酸鉄(III)錯イオン", color: "血赤色", note: "Fe³⁺ に KSCN 溶液を加える" },
+    { category: "イオン・錯イオン", name: "ヘキサシアニド鉄(II)酸イオン [Fe(CN)₆]⁴⁻", color: "淡黄色", note: "水溶液" },
+    { category: "イオン・錯イオン", name: "ヘキサシアニド鉄(III)酸イオン [Fe(CN)₆]³⁻", color: "黄色", note: "水溶液" },
+    { category: "イオン・錯イオン", name: "クロム(III)イオン Cr³⁺", color: "緑色", note: "二クロム酸イオンが還元された後など" },
+    { category: "イオン・錯イオン", name: "クロム酸イオン CrO₄²⁻", color: "黄色", note: "塩基性条件で安定" },
+    { category: "イオン・錯イオン", name: "二クロム酸イオン Cr₂O₇²⁻", color: "赤橙色", note: "酸性条件で安定・酸化剤" },
+    { category: "イオン・錯イオン", name: "過マンガン酸イオン MnO₄⁻", color: "赤紫色", note: "強力な酸化剤" },
+    { category: "イオン・錯イオン", name: "マンガン(II)イオン Mn²⁺", color: "淡紅色（ほぼ無色）", note: "過マンガン酸イオン還元後" },
 
-    function renderCard() {
-      const item = currentList[currentIndex];
-      document.getElementById('ion').textContent = item.name;
-      document.getElementById('tag').textContent = item.type;
-      
-      const colorEl = document.getElementById('color');
-      colorEl.textContent = item.color;
-      colorEl.style.color = item.code;
-      colorEl.classList.remove('show');
-    }
+    // ==========================================
+    // 3. 沈殿・水酸化物・酸化物・硫化物
+    // ==========================================
+    { category: "沈殿・難溶性塩", name: "水酸化鉄(II) Fe(OH)₂", color: "緑白色", note: "沈殿" },
+    { category: "沈殿・難溶性塩", name: "水酸化鉄(III) Fe(OH)₃", color: "赤褐色", note: "沈殿（コロイドも同色）" },
+    { category: "沈殿・難溶性塩", name: "水酸化銅(II) Cu(OH)₂", color: "青白色", note: "沈殿" },
+    { category: "沈殿・難溶性塩", name: "酸化銀 Ag₂O", color: "褐色", note: "Ag⁺ に塩基を加えると生じる沈殿" },
+    { category: "沈殿・難溶性塩", name: "水酸化アルミニウム Al(OH)₃", color: "白色", note: "両性元素の沈殿・過剰NaOHで溶解" },
+    { category: "沈殿・難溶性塩", name: "水酸化亜鉛 Zn(OH)₂", color: "白色", note: "両性元素の沈殿・過剰NaOH/NH₃で溶解" },
+    { category: "沈殿・難溶性塩", name: "一般的な硫化物 (FeS, CuS, Ag₂S など)", color: "黒色", note: "沈殿" },
+    { category: "沈殿・難溶性塩", name: "硫化カドミウム CdS", color: "黄色", note: "硫化物沈殿の例外色" },
+    { category: "沈殿・難溶性塩", name: "硫化亜鉛 ZnS", color: "白色", note: "硫化物沈殿の例外色" },
+    { category: "沈殿・難溶性塩", name: "硫化マンガン MnS", color: "淡紅色", note: "硫化物沈殿の例外色" },
+    { category: "沈殿・難溶性塩", name: "クロム酸銀 Ag₂CrO₄", color: "赤褐色", note: "沈殿" },
+    { category: "沈殿・難溶性塩", name: "クロム酸バリウム BaCrO₄", color: "黄色", note: "沈殿" },
+    { category: "沈殿・難溶性塩", name: "クロム酸鉛 PbCrO₄", color: "黄色", note: "沈殿" },
+    { category: "沈殿・難溶性塩", name: "紺青 / ベルリン青 (Fe²⁺+[Fe(CN)₆]³⁻ または Fe³⁺+[Fe(CN)₆]⁴⁻)", color: "濃青色", note: "錯塩の沈殿" },
 
-    function toggleColor() {
-      const colorEl = document.getElementById('color');
-      colorEl.classList.toggle('show');
-    }
+    // ==========================================
+    // 4. 有色気体・単体・結晶
+    // ==========================================
+    { category: "気体・単体・結晶", name: "オゾン O₃", color: "淡青色", note: "気体・特異臭" },
+    { category: "気体・単体・結晶", name: "二酸化窒素 NO₂", color: "赤褐色", note: "気体・刺激臭" },
+    { category: "気体・単体・結晶", name: "黒鉛 C", color: "黒色", note: "単体" },
+    { category: "気体・単体・結晶", name: "一酸化二銅 Cu₂O", color: "赤色", note: "フェーリング反応等で生成" },
+    { category: "気体・単体・結晶", name: "酸化銅(II) CuO", color: "黒色", note: "Cuを空気中で加熱" },
+    { category: "気体・単体・結晶", name: "緑青", color: "緑色", note: "銅の表面につく錆" },
+    { category: "気体・単体・結晶", name: "塩化鉄(III)六水和物 FeCl₃·6H₂O", color: "黄褐色", note: "潮解性結晶" },
+    { category: "気体・単体・結晶", name: "硫酸銅(II)無水物 CuSO₄", color: "白色", note: "水分の検出に利用" },
+    { category: "気体・単体・結晶", name: "硫酸銅(II)五水和物 CuSO₄·5H₂O", color: "青色", note: "[Cu(H₂O)₄]²⁺ による色" },
 
-    function nextCard() {
-      if (currentList.length === 0) return;
-      currentIndex = (currentIndex + 1) % currentList.length;
-      renderCard();
-    }
+    // ==========================================
+    // 5. 呈色反応・検出反応
+    // ==========================================
+    { category: "呈色・検出反応", name: "ヨウ素デンプン反応", color: "青紫色", note: "ヨウ素 ＋ デンプン" },
+    { category: "呈色・検出反応", name: "ネスラー試薬", color: "黄色〜山吹色〜褐色", note: "NH₄⁺ の検出" },
+    { category: "呈色・検出反応", name: "アンモニア ＋ 塩化水素（NH₄Cl 白煙）", color: "白色", note: "微粒子の白煙" }
+  ];
 
-    function shuffleData() {
-      for (let i = currentList.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [currentList[i], currentList[j]] = [currentList[j], currentList[i]];
-      }
-      currentIndex = 0;
-      renderCard();
-    }
+  const categoryFilter = document.getElementById("categoryFilter");
+  const searchInput = document.getElementById("searchInput");
+  const cardGrid = document.getElementById("cardGrid");
+  const countInfo = document.getElementById("countInfo");
 
-    function filterData(type) {
-      // ボタンの見た目切り替え
-      const buttons = document.querySelectorAll('.filter-btn');
-      buttons.forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+  function renderCards() {
+    const selectedCategory = categoryFilter.value;
+    const keyword = searchInput.value.toLowerCase().trim();
 
-      // データの絞り込み
-      if (type === 'all') {
-        currentList = [...masterData];
-      } else {
-        currentList = masterData.filter(item => item.type === type);
-      }
-      
-      currentIndex = 0;
-      renderCard();
-    }
+    const filtered = colorData.filter(item => {
+      const matchCat = (selectedCategory === "ALL" || item.category === selectedCategory);
+      const matchKey = (item.name.toLowerCase().includes(keyword) ||
+                        item.color.toLowerCase().includes(keyword) ||
+                        item.note.toLowerCase().includes(keyword));
+      return matchCat && matchKey;
+    });
 
-    // 初期表示
-    renderCard();
-  </script>
+    cardGrid.innerHTML = "";
+    filtered.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <span class="card-category">${item.category}</span>
+        <div class="card-name">${item.name}</div>
+        <div class="card-color-box">
+          <span>色:</span>
+          <span class="color-label">${item.color}</span>
+        </div>
+        <div class="card-note">${item.note}</div>
+      `;
+      cardGrid.appendChild(card);
+    });
+
+    countInfo.textContent = `表示中: ${filtered.length} 件 / 全 ${colorData.length} 件`;
+  }
+
+  categoryFilter.addEventListener("change", renderCards);
+  searchInput.addEventListener("input", renderCards);
+
+  // 初期表示
+  renderCards();
+</script>
+
 </body>
 </html>
