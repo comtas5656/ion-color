@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- バージョン管理用メタタグ（データ更新時はここを変更） -->
+  <meta name="app-version" content="1.0.0">
+  
+  <!-- キャッシュ無効化ヘッダー -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>無機化学 色の暗記データベース</title>
   <style>
     *, *::before, *::after {
@@ -366,10 +371,42 @@
 </div>
 
 <script>
+  // ==========================================
+  // 自動更新検知システム
+  // ==========================================
+  const CURRENT_VERSION = "1.0.0"; // 👈 更新時はここを変更（<head>のmetaタグと揃える）
+
+  async function checkAppVersion() {
+    try {
+      // タイムスタンプを付与してサーバー上の最新HTMLを取得
+      const response = await fetch(`${window.location.href.split('?')[0]}?t=${Date.now()}`, {
+        cache: "no-store"
+      });
+      const text = await response.text();
+      
+      // レスポンスからメタタグのバージョン文字列を抽出
+      const match = text.match(/<meta\s+name="app-version"\s+content="([^"]+)"/i);
+      if (match && match[1]) {
+        const serverVersion = match[1];
+        if (serverVersion !== CURRENT_VERSION) {
+          if (confirm("新しい問題データ（最新版）が届いています！更新しますか？")) {
+            window.location.reload(true);
+          }
+        }
+      }
+    } catch (e) {
+      console.log("バージョンチェックのスキップ（オフラインまたは通信エラー）");
+    }
+  }
+
+  // 画面読み込み完了時にバージョンチェックを実行
+  window.addEventListener("DOMContentLoaded", checkAppVersion);
+
+  // ==========================================
+  // 暗記データベース データ本体
+  // ==========================================
   const colorData = [
-    // ==========================================
     // 1. ハロゲン単体およびハロゲン化物
-    // ==========================================
     { id: 1, category: "ハロゲン・ハロゲン化物", name: "フッ素 F₂", color: "淡黄色", note: "常温で気体" },
     { id: 2, category: "ハロゲン・ハロゲン化物", name: "塩素 Cl₂", color: "黄緑色", note: "常温で気体・刺激臭" },
     { id: 3, category: "ハロゲン・ハロゲン化物", name: "臭素 Br₂", color: "赤褐色", note: "常温で液体" },
@@ -379,9 +416,7 @@
     { id: 7, category: "ハロゲン・ハロゲン化物", name: "ヨウ化銀 AgI", color: "黄色", note: "沈殿・水に不溶・感光性" },
     { id: 8, category: "ハロゲン・ハロゲン化物", name: "フッ化銀 AgF", color: "黄色（※固体は褐色〜黄褐色）", note: "水に可溶（他のハロゲン化銀と異なる）" },
 
-    // ==========================================
     // 2. 水溶液・イオン・錯イオン
-    // ==========================================
     { id: 9, category: "イオン・錯イオン", name: "鉄(II)イオン Fe²⁺", color: "淡緑色", note: "水溶液" },
     { id: 10, category: "イオン・錯イオン", name: "鉄(III)イオン Fe³⁺", color: "黄褐色", note: "水溶液" },
     { id: 11, category: "イオン・錯イオン", name: "テトラアクア銅(II)イオン [Cu(H₂O)₄]²⁺", color: "青色", note: "水溶液" },
@@ -395,9 +430,7 @@
     { id: 19, category: "イオン・錯イオン", name: "過マンガン酸イオン MnO₄⁻", color: "赤紫色", note: "強力な酸化剤" },
     { id: 20, category: "イオン・錯イオン", name: "マンガン(II)イオン Mn²⁺", color: "淡紅色（ほぼ無色）", note: "過マンガン酸イオン還元後" },
 
-    // ==========================================
     // 3. 沈殿・水酸化物・酸化物・硫化物
-    // ==========================================
     { id: 21, category: "沈殿・難溶性塩", name: "水酸化鉄(II) Fe(OH)₂", color: "緑白色", note: "沈殿" },
     { id: 22, category: "沈殿・難溶性塩", name: "水酸化鉄(III) Fe(OH)₃", color: "赤褐色", note: "沈殿（コロイドも同色）" },
     { id: 23, category: "沈殿・難溶性塩", name: "水酸化銅(II) Cu(OH)₂", color: "青白色", note: "沈殿" },
@@ -413,9 +446,7 @@
     { id: 33, category: "沈殿・難溶性塩", name: "クロム酸鉛 PbCrO₄", color: "黄色", note: "沈殿" },
     { id: 34, category: "沈殿・難溶性塩", name: "紺青 / ベルリン青 (Fe²⁺+[Fe(CN)₆]³⁻ または Fe³⁺+[Fe(CN)₆]⁴⁻)", color: "濃青色", note: "錯塩の沈殿" },
 
-    // ==========================================
     // 4. 有色気体・単体・結晶
-    // ==========================================
     { id: 35, category: "気体・単体・結晶", name: "オゾン O₃", color: "淡青色", note: "気体・特異臭" },
     { id: 36, category: "気体・単体・結晶", name: "二酸化窒素 NO₂", color: "赤褐色", note: "気体・刺激臭" },
     { id: 37, category: "気体・単体・結晶", name: "黒鉛 C", color: "黒色", note: "単体" },
@@ -426,9 +457,7 @@
     { id: 42, category: "気体・単体・結晶", name: "硫酸銅(II)無水物 CuSO₄", color: "白色", note: "水分の検出に利用" },
     { id: 43, category: "気体・単体・結晶", name: "硫酸銅(II)五水和物 CuSO₄·5H₂O", color: "青色", note: "[Cu(H₂O)₄]²⁺ による色" },
 
-    // ==========================================
     // 5. 呈色反応・検出反応
-    // ==========================================
     { id: 44, category: "呈色・検出反応", name: "ヨウ素デンプン反応", color: "青紫色", note: "ヨウ素 ＋ デンプン" },
     { id: 45, category: "呈色・検出反応", name: "ネスラー試薬", color: "黄色〜山吹色〜褐色", note: "NH₄⁺ の検出" },
     { id: 46, category: "呈色・検出反応", name: "アンモニア ＋ 塩化水素（NH₄Cl 白煙）", color: "白色", note: "微粒子の白煙" }
@@ -438,7 +467,7 @@
   let qaDeck = [];
   let qaIndex = 0;
   let currentQaItem = null;
-  const reviewSet = new Set(); // 復習対象のIDを保持
+  const reviewSet = new Set();
 
   const categoryFilter = document.getElementById("categoryFilter");
   const orderSelect = document.getElementById("orderSelect");
@@ -506,7 +535,6 @@
     return arr;
   }
 
-  // デッキ初期化
   function resetQaDeck() {
     let filtered = getFilteredData();
 
@@ -549,9 +577,7 @@
 
     document.getElementById("reviewCheckContainer").classList.remove("hidden");
 
-    // 1周終わったか判定
     if (qaIndex >= qaDeck.length) {
-      // 現在のフィルター条件に当てはまる復習対象を抽出
       const currentFiltered = getFilteredData();
       const currentReviewItems = currentFiltered.filter(item => reviewSet.has(item.id));
 
@@ -574,7 +600,6 @@
     qaNote.textContent = currentQaItem.note;
     qaColor.textContent = currentQaItem.color;
 
-    // チェック状態の同期
     qaReviewCheck.checked = reviewSet.has(currentQaItem.id);
 
     const prefix = orderSelect.value === "reviewOnly" ? "【復習中】" : "";
@@ -586,7 +611,6 @@
     qaIndex++;
   }
 
-  // チェックボックス変更時の状態更新
   qaReviewCheck.addEventListener("change", (e) => {
     if (!currentQaItem) return;
     if (e.target.checked) {
