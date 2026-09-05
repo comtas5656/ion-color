@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>無機化学 色の暗記暗記倶楽部</title>
+  <title>無機化学 色の暗記倶楽部</title>
   <style>
     :root {
       --primary-color: #2c3e50;
@@ -31,7 +31,32 @@
     h1 {
       text-align: center;
       color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    /* モード切替タブ */
+    .mode-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
       margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      padding: 10px 24px;
+      border: 2px solid var(--secondary-color);
+      background-color: #fff;
+      color: var(--secondary-color);
+      font-weight: bold;
+      font-size: 15px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background-color: var(--secondary-color);
+      color: #fff;
     }
 
     .controls {
@@ -59,6 +84,7 @@
       min-width: 200px;
     }
 
+    /* 一覧モード用グリッド */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -127,6 +153,80 @@
       font-size: 14px;
     }
 
+    /* 1問1答モード用スタイル */
+    .qa-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .qa-card {
+      width: 100%;
+      max-width: 500px;
+      background-color: #fff;
+      border: 2px solid var(--secondary-color);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+
+    .qa-card:hover {
+      border-color: #1d6fa5;
+    }
+
+    .qa-hint {
+      font-size: 13px;
+      color: #888;
+      margin-top: 15px;
+    }
+
+    .qa-answer {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e8f4fc;
+      border-radius: 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .qa-answer-text {
+      font-size: 22px;
+      font-weight: bold;
+      color: #e74c3c;
+    }
+
+    .qa-btn {
+      margin-top: 25px;
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: background-color 0.2s;
+    }
+
+    .qa-btn:hover {
+      background-color: #219150;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
     @media (max-width: 600px) {
       .controls {
         flex-direction: column;
@@ -142,6 +242,13 @@
 <div class="container">
   <h1>無機化学 色の暗記データベース</h1>
 
+  <!-- モード切替 -->
+  <div class="mode-tabs">
+    <button class="tab-btn active" id="btnListMode">一覧モード</button>
+    <button class="tab-btn" id="btnQaMode">1問1答モード</button>
+  </div>
+
+  <!-- 絞り込みコントロール -->
   <div class="controls">
     <select id="categoryFilter">
       <option value="ALL">すべてのカテゴリー</option>
@@ -154,13 +261,33 @@
     <input type="text" id="searchInput" placeholder="物質名やキーワードで検索...">
   </div>
 
-  <div class="count-info" id="countInfo">表示中: 0 件</div>
+  <!-- 一覧モードエリア -->
+  <div id="listModeArea">
+    <div class="count-info" id="countInfo">表示中: 0 件</div>
+    <div class="grid" id="cardGrid"></div>
+  </div>
 
-  <div class="grid" id="cardGrid"></div>
+  <!-- 1問1答モードエリア -->
+  <div id="qaModeArea" class="hidden">
+    <div class="qa-container">
+      <div class="qa-card" id="qaCard">
+        <span class="card-category" id="qaCategory">-</span>
+        <div class="card-name" id="qaName" style="font-size: 24px; margin: 15px 0;">-</div>
+        <div class="card-note" id="qaNote" style="border:none; padding:0; font-size: 14px;">-</div>
+        
+        <div id="qaAnswerBox" class="qa-answer hidden">
+          <div style="font-size: 13px; color: #555;">【色】</div>
+          <div class="qa-answer-text" id="qaColor">-</div>
+        </div>
+        
+        <div class="qa-hint" id="qaHint">クリック／タップで答え（色）を表示</div>
+      </div>
+      <button class="qa-btn" id="nextQaBtn">次の問題へ ➔</button>
+    </div>
+  </div>
 </div>
 
 <script>
-  // 色データ
   const colorData = [
     // ==========================================
     // 1. ハロゲン単体およびハロゲン化物
@@ -229,24 +356,47 @@
     { category: "呈色・検出反応", name: "アンモニア ＋ 塩化水素（NH₄Cl 白煙）", color: "白色", note: "微粒子の白煙" }
   ];
 
+  let currentMode = "list"; // "list" または "qa"
+  let currentQaItem = null;
+
   const categoryFilter = document.getElementById("categoryFilter");
   const searchInput = document.getElementById("searchInput");
   const cardGrid = document.getElementById("cardGrid");
   const countInfo = document.getElementById("countInfo");
 
-  function renderCards() {
+  const btnListMode = document.getElementById("btnListMode");
+  const btnQaMode = document.getElementById("btnQaMode");
+  const listModeArea = document.getElementById("listModeArea");
+  const qaModeArea = document.getElementById("qaModeArea");
+
+  const qaCard = document.getElementById("qaCard");
+  const qaCategory = document.getElementById("qaCategory");
+  const qaName = document.getElementById("qaName");
+  const qaNote = document.getElementById("qaNote");
+  const qaColor = document.getElementById("qaColor");
+  const qaAnswerBox = document.getElementById("qaAnswerBox");
+  const qaHint = document.getElementById("qaHint");
+  const nextQaBtn = document.getElementById("nextQaBtn");
+
+  // フィルタリング処理
+  function getFilteredData() {
     const selectedCategory = categoryFilter.value;
     const keyword = searchInput.value.toLowerCase().trim();
 
-    const filtered = colorData.filter(item => {
+    return colorData.filter(item => {
       const matchCat = (selectedCategory === "ALL" || item.category === selectedCategory);
       const matchKey = (item.name.toLowerCase().includes(keyword) ||
                         item.color.toLowerCase().includes(keyword) ||
                         item.note.toLowerCase().includes(keyword));
       return matchCat && matchKey;
     });
+  }
 
+  // 一覧描画
+  function renderList() {
+    const filtered = getFilteredData();
     cardGrid.innerHTML = "";
+
     filtered.forEach(item => {
       const card = document.createElement("div");
       card.className = "card";
@@ -265,11 +415,81 @@
     countInfo.textContent = `表示中: ${filtered.length} 件 / 全 ${colorData.length} 件`;
   }
 
-  categoryFilter.addEventListener("change", renderCards);
-  searchInput.addEventListener("input", renderCards);
+  // 1問1答データセット
+  function nextQaQuestion() {
+    const filtered = getFilteredData();
+    if (filtered.length === 0) {
+      qaCategory.textContent = "-";
+      qaName.textContent = "該当する問題がありません";
+      qaNote.textContent = "条件を変更してください";
+      qaColor.textContent = "-";
+      qaAnswerBox.classList.add("hidden");
+      qaHint.classList.add("hidden");
+      currentQaItem = null;
+      return;
+    }
 
-  // 初期表示
-  renderCards();
+    // ランダムに選出
+    const randomIndex = Math.floor(Math.random() * filtered.length);
+    currentQaItem = filtered[randomIndex];
+
+    qaCategory.textContent = currentQaItem.category;
+    qaName.textContent = currentQaItem.name;
+    qaNote.textContent = currentQaItem.note;
+    qaColor.textContent = currentQaItem.color;
+
+    // 答えを隠す
+    qaAnswerBox.classList.add("hidden");
+    qaHint.classList.remove("hidden");
+  }
+
+  // モード切替イベント
+  btnListMode.addEventListener("click", () => {
+    currentMode = "list";
+    btnListMode.classList.add("active");
+    btnQaMode.classList.remove("active");
+    listModeArea.classList.remove("hidden");
+    qaModeArea.classList.add("hidden");
+    renderList();
+  });
+
+  btnQaMode.addEventListener("click", () => {
+    currentMode = "qa";
+    btnQaMode.classList.add("active");
+    btnListMode.classList.remove("active");
+    qaModeArea.classList.remove("hidden");
+    listModeArea.classList.add("hidden");
+    nextQaQuestion();
+  });
+
+  // カードクリックで答え表示
+  qaCard.addEventListener("click", () => {
+    if (!currentQaItem) return;
+    if (qaAnswerBox.classList.contains("hidden")) {
+      qaAnswerBox.classList.remove("hidden");
+      qaHint.classList.add("hidden");
+    }
+  });
+
+  // 次の問題へ
+  nextQaBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // カード側のクリックイベント発火防止
+    nextQaQuestion();
+  });
+
+  // 検索・絞り込み連動
+  categoryFilter.addEventListener("change", () => {
+    if (currentMode === "list") renderList();
+    else nextQaQuestion();
+  });
+
+  searchInput.addEventListener("input", () => {
+    if (currentMode === "list") renderList();
+    else nextQaQuestion();
+  });
+
+  // 初期化
+  renderList();
 </script>
 
 </body>
