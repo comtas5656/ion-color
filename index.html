@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- バージョン管理用メタタグ（1.0.1へ更新） -->
-  <meta name="app-version" content="1.0.1">
+  <!-- バージョン管理用メタタグ（1.0.2へ更新） -->
+  <meta name="app-version" content="1.0.2">
   
   <!-- キャッシュ無効化ヘッダー -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -387,9 +387,9 @@
 
 <script>
   // ==========================================
-  // 自動更新検知システム（バージョン: 1.0.1）
+  // 自動更新検知システム（バージョン: 1.0.2）
   // ==========================================
-  const CURRENT_VERSION = "1.0.1";
+  const CURRENT_VERSION = "1.0.2";
 
   async function checkAppVersion() {
     try {
@@ -426,21 +426,21 @@
     { id: 5, category: "ハロゲン・ハロゲン化物", name: "塩化銀 AgCl", color: "白色", note: "沈殿・水に不溶・感光性" },
     { id: 6, category: "ハロゲン・ハロゲン化物", name: "臭化銀 AgBr", color: "淡黄色", note: "沈殿・水に不溶・感光性" },
     { id: 7, category: "ハロゲン・ハロゲン化物", name: "ヨウ化銀 AgI", color: "黄色", note: "沈殿・水に不溶・感光性" },
-    { id: 8, category: "ハロゲン・ハロゲン化物", name: "フッ化銀 AgF", color: "黄色（※固体は褐色〜黄褐色）", note: "水に可溶（他のハロゲン化銀と異なる）" },
+    { id: 8, category: "ハロゲン・ハロゲン化物", name: "フッ化銀 AgF は沈殿するかしないか？", color: "沈殿しない", note: "（他のハロゲン化銀と異なる）" },
 
     // 2. 水溶液・イオン・錯イオン
     { id: 9, category: "イオン・錯イオン", name: "鉄(II)イオン Fe²⁺", color: "淡緑色", note: "水溶液" },
     { id: 10, category: "イオン・錯イオン", name: "鉄(III)イオン Fe³⁺", color: "黄褐色", note: "水溶液" },
-    { id: 11, category: "イオン・錯イオン", name: "テトラアクア銅(II)イオン [Cu(H₂O)₄]²⁺", color: "青色", note: "水溶液" },
-    { id: 12, category: "イオン・錯イオン", name: "テトラアンミン銅(II)イオン [Cu(NH₃)₄]²⁺", color: "深青色", note: "過剰のアンモニア水追加で溶解" },
-    { id: 13, category: "イオン・錯イオン", name: "チオシアン酸鉄(III)錯イオン", color: "血赤色", note: "Fe³⁺ に KSCN 溶液を加える" },
+    { id: 11, category: "イオン・錯イオン", name: "テトラアクア銅(II)イオン [Cu(H₂O)₄]²⁺", color: "青色", note: "水溶液（普通 Cu²⁺ と書く）" },
+    { id: 12, category: "イオン・錯イオン", name: "テトラアンミン銅(II)イオン [Cu(NH₃)₄]²⁺", color: "深青色", note: "Cu²⁺ にアンモニア水 → 一時 Cu(OH)₂ 青白色沈殿 → アンモニア水過剰で [Cu(NH₃)₄]²⁺ になり溶解" },
+    { id: 13, category: "イオン・錯イオン", name: "Fe³⁺ に KSCN 溶液を加える", color: "血赤色", note: "Fe³⁺ と SCN⁻ による錯イオンの色" },
     { id: 14, category: "イオン・錯イオン", name: "ヘキサシアニド鉄(II)酸イオン [Fe(CN)₆]⁴⁻", color: "淡黄色", note: "水溶液" },
     { id: 15, category: "イオン・錯イオン", name: "ヘキサシアニド鉄(III)酸イオン [Fe(CN)₆]³⁻", color: "黄色", note: "水溶液" },
-    { id: 16, category: "イオン・錯イオン", name: "クロム(III)イオン Cr³⁺", color: "緑色", note: "二クロム酸イオンが還元された後など" },
     { id: 17, category: "イオン・錯イオン", name: "クロム酸イオン CrO₄²⁻", color: "黄色", note: "塩基性条件で安定" },
     { id: 18, category: "イオン・錯イオン", name: "二クロム酸イオン Cr₂O₇²⁻", color: "赤橙色", note: "酸性条件で安定・酸化剤" },
+    { id: 16, category: "イオン・錯イオン", name: "クロム(III)イオン Cr³⁺", color: "緑色", note: "二クロム酸イオンが還元された後など" },
     { id: 19, category: "イオン・錯イオン", name: "過マンガン酸イオン MnO₄⁻", color: "赤紫色", note: "強力な酸化剤" },
-    { id: 20, category: "イオン・錯イオン", name: "マンガン(II)イオン Mn²⁺", color: "淡紅色（ほぼ無色）", note: "過マンガン酸イオン還元後" },
+    { id: 20, category: "イオン・錯イオン", name: "マンガン(II)イオン Mn²⁺", color: "淡紅色（ほぼ無色）", note: "過マンガン酸イオンが還元された後" },
 
     // 3. 沈殿・水酸化物・酸化物・硫化物
     { id: 21, category: "沈殿・難溶性塩", name: "水酸化鉄(II) Fe(OH)₂", color: "緑白色", note: "沈殿" },
@@ -452,18 +452,20 @@
     { id: 27, category: "沈殿・難溶性塩", name: "一般的な硫化物 (FeS, CuS, Ag₂S など)", color: "黒色", note: "沈殿" },
     { id: 28, category: "沈殿・難溶性塩", name: "硫化カドミウム CdS", color: "黄色", note: "硫化物沈殿の例外色" },
     { id: 29, category: "沈殿・難溶性塩", name: "硫化亜鉛 ZnS", color: "白色", note: "硫化物沈殿の例外色" },
-    { id: 30, category: "沈殿・難溶性塩", name: "硫化マンガン MnS", color: "淡紅色", note: "硫化物沈殿の例外色" },
+    { id: 30, category: "沈殿・難溶性塩", name: "硫化マンガン MnS", color: "淡赤色", note: "硫化物沈殿の例外色" },
     { id: 31, category: "沈殿・難溶性塩", name: "クロム酸銀 Ag₂CrO₄", color: "赤褐色", note: "沈殿" },
     { id: 32, category: "沈殿・難溶性塩", name: "クロム酸バリウム BaCrO₄", color: "黄色", note: "沈殿" },
     { id: 33, category: "沈殿・難溶性塩", name: "クロム酸鉛 PbCrO₄", color: "黄色", note: "沈殿" },
-    { id: 34, category: "沈殿・難溶性塩", name: "紺青 / ベルリン青 (Fe²⁺+[Fe(CN)₆]³⁻ または Fe³⁺+[Fe(CN)₆]⁴⁻)", color: "濃青色", note: "錯塩の沈殿" },
+    { id: 34, category: "沈殿・難溶性塩", name: "Fe²⁺ に [Fe(CN)₆]³⁻ または Fe³⁺ に [Fe(CN)₆]⁴⁻", color: "濃青色", note: "錯塩の沈殿" },
 
     // 4. 有色気体・単体・結晶
     { id: 35, category: "気体・単体・結晶", name: "オゾン O₃", color: "淡青色", note: "気体・特異臭" },
     { id: 36, category: "気体・単体・結晶", name: "二酸化窒素 NO₂", color: "赤褐色", note: "気体・刺激臭" },
+    { id: 47, category: "気体・単体・結晶", name: "フッ素 F₂", color: "淡黄色", note: "気体・刺激臭" },
+    { id: 48, category: "気体・単体・結晶", name: "塩素 Cl₂", color: "黄緑色", note: "気体・刺激臭" },
     { id: 37, category: "気体・単体・結晶", name: "黒鉛 C", color: "黒色", note: "単体" },
-    { id: 38, category: "気体・単体・結晶", name: "一酸化二銅 Cu₂O", color: "赤色", note: "フェーリング反応等で生成" },
     { id: 39, category: "気体・単体・結晶", name: "酸化銅(II) CuO", color: "黒色", note: "Cuを空気中で加熱" },
+    { id: 38, category: "気体・単体・結晶", name: "酸化銅(I) Cu₂O", color: "赤色", note: "フェーリング反応、CuOを加熱で生成" },
     { id: 40, category: "気体・単体・結晶", name: "緑青", color: "緑色", note: "銅の表面につく錆" },
     { id: 41, category: "気体・単体・結晶", name: "塩化鉄(III)六水和物 FeCl₃·6H₂O", color: "黄褐色", note: "潮解性結晶" },
     { id: 42, category: "気体・単体・結晶", name: "硫酸銅(II)無水物 CuSO₄", color: "白色", note: "水分の検出に利用" },
