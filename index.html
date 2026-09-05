@@ -3,8 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>無機化学 色の暗記倶楽部</title>
+  <title>無機化学 色の暗記データベース</title>
   <style>
+    /* ボックスサイズの計算方法を全要素で統一 */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     :root {
       --primary-color: #2c3e50;
       --secondary-color: #3498db;
@@ -19,19 +24,21 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       margin: 0;
-      padding: 20px;
+      padding: 15px; /* スマホ用に余白を少し調整 */
       line-height: 1.6;
     }
 
     .container {
       max-width: 1000px;
       margin: 0 auto;
+      width: 100%;
     }
 
     h1 {
       text-align: center;
       color: var(--primary-color);
       margin-bottom: 15px;
+      font-size: 22px;
     }
 
     /* モード切替タブ */
@@ -43,12 +50,12 @@
     }
 
     .tab-btn {
-      padding: 10px 24px;
+      padding: 8px 18px;
       border: 2px solid var(--secondary-color);
       background-color: #fff;
       color: var(--secondary-color);
       font-weight: bold;
-      font-size: 15px;
+      font-size: 14px;
       border-radius: 25px;
       cursor: pointer;
       transition: all 0.2s;
@@ -65,13 +72,15 @@
       gap: 10px;
       margin-bottom: 20px;
       justify-content: center;
+      width: 100%;
     }
 
     select, input {
-      padding: 10px 15px;
+      padding: 10px 12px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 16px;
+      font-size: 15px;
+      max-width: 100%; /* 画面幅超過を防ぐ */
     }
 
     select {
@@ -81,23 +90,25 @@
 
     input[type="text"] {
       flex: 1;
-      min-width: 200px;
+      min-width: 0; /* フレックス要素のはみ出し防止 */
     }
 
     /* 一覧モード用グリッド */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+      width: 100%;
     }
 
     .card {
       background-color: var(--card-bg);
       border-radius: 8px;
       border: 1px solid var(--border-color);
-      padding: 15px 20px;
+      padding: 15px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       transition: transform 0.2s, box-shadow 0.2s;
+      width: 100%;
     }
 
     .card:hover {
@@ -113,14 +124,15 @@
       background-color: var(--secondary-color);
       padding: 3px 8px;
       border-radius: 4px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .card-name {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: bold;
       margin-bottom: 8px;
       color: var(--primary-color);
+      word-break: break-word; /* 長い単語の改行処理 */
     }
 
     .card-color-box {
@@ -135,7 +147,7 @@
 
     .color-label {
       font-weight: bold;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     .card-note {
@@ -144,13 +156,14 @@
       margin-top: 8px;
       border-top: 1px dashed var(--border-color);
       padding-top: 8px;
+      word-break: break-word;
     }
 
     .count-info {
       text-align: right;
       margin-bottom: 10px;
       color: #666;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     /* 1問1答モード用スタイル */
@@ -159,6 +172,7 @@
       flex-direction: column;
       align-items: center;
       margin-top: 10px;
+      width: 100%;
     }
 
     .qa-card {
@@ -167,12 +181,12 @@
       background-color: #fff;
       border: 2px solid var(--secondary-color);
       border-radius: 12px;
-      padding: 30px;
+      padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       text-align: center;
       cursor: pointer;
       user-select: none;
-      min-height: 220px;
+      min-height: 200px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -185,24 +199,24 @@
     }
 
     .qa-hint {
-      font-size: 13px;
+      font-size: 12px;
       color: #888;
       margin-top: 15px;
     }
 
     .qa-answer {
-      margin-top: 20px;
-      padding: 15px;
+      margin-top: 15px;
+      padding: 12px;
       background-color: #e8f4fc;
       border-radius: 8px;
       width: 100%;
-      box-sizing: border-box;
     }
 
     .qa-answer-text {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
       color: #e74c3c;
+      word-break: break-word;
     }
 
     .qa-btn {
@@ -217,6 +231,8 @@
       cursor: pointer;
       box-shadow: 0 3px 6px rgba(0,0,0,0.1);
       transition: background-color 0.2s;
+      width: 100%;
+      max-width: 300px;
     }
 
     .qa-btn:hover {
@@ -224,21 +240,39 @@
     }
 
     .qa-progress {
-      font-size: 14px;
+      font-size: 13px;
       color: #666;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .hidden {
       display: none !important;
     }
 
+    /* スマホ（画面幅600px以下）向けの最適化 */
     @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 18px;
+      }
+
       .controls {
         flex-direction: column;
       }
-      input[type="text"] {
+
+      select, input[type="text"] {
         width: 100%;
+      }
+
+      .grid {
+        grid-template-columns: 1fr; /* スマホでは1列表示 */
+      }
+
+      .qa-card {
+        padding: 15px;
       }
     }
   </style>
@@ -286,11 +320,11 @@
       <div class="qa-progress" id="qaProgress">進捗: 0 / 0</div>
       <div class="qa-card" id="qaCard">
         <span class="card-category" id="qaCategory">-</span>
-        <div class="card-name" id="qaName" style="font-size: 24px; margin: 15px 0;">-</div>
-        <div class="card-note" id="qaNote" style="border:none; padding:0; font-size: 14px;">-</div>
+        <div class="card-name" id="qaName" style="font-size: 20px; margin: 15px 0;">-</div>
+        <div class="card-note" id="qaNote" style="border:none; padding:0; font-size: 13px;">-</div>
         
         <div id="qaAnswerBox" class="qa-answer hidden">
-          <div style="font-size: 13px; color: #555;">【色】</div>
+          <div style="font-size: 12px; color: #555;">【色】</div>
           <div class="qa-answer-text" id="qaColor">-</div>
         </div>
         
@@ -370,9 +404,9 @@
     { category: "呈色・検出反応", name: "アンモニア ＋ 塩化水素（NH₄Cl 白煙）", color: "白色", note: "微粒子の白煙" }
   ];
 
-  let currentMode = "list"; // "list" または "qa"
-  let qaDeck = [];          // 現在の出題キュー
-  let qaIndex = 0;          // 現在のキュー内のインデックス
+  let currentMode = "list";
+  let qaDeck = [];
+  let qaIndex = 0;
   let currentQaItem = null;
 
   const categoryFilter = document.getElementById("categoryFilter");
@@ -396,7 +430,6 @@
   const qaProgress = document.getElementById("qaProgress");
   const nextQaBtn = document.getElementById("nextQaBtn");
 
-  // フィルタリング処理
   function getFilteredData() {
     const selectedCategory = categoryFilter.value;
     const keyword = searchInput.value.toLowerCase().trim();
@@ -410,7 +443,6 @@
     });
   }
 
-  // 一覧描画
   function renderList() {
     const filtered = getFilteredData();
     cardGrid.innerHTML = "";
@@ -433,7 +465,6 @@
     countInfo.textContent = `表示中: ${filtered.length} 件 / 全 ${colorData.length} 件`;
   }
 
-  // 配列のシャッフル（フィッシャー–イェーツ）
   function shuffle(array) {
     const arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -443,7 +474,6 @@
     return arr;
   }
 
-  // 1問1答用のデッキ（出題キュー）を再構築
   function resetQaDeck() {
     const filtered = getFilteredData();
     if (filtered.length === 0) {
@@ -460,7 +490,6 @@
     qaIndex = 0;
   }
 
-  // 1問1答画面更新
   function showNextQaQuestion() {
     if (qaDeck.length === 0) {
       qaCategory.textContent = "-";
@@ -474,7 +503,6 @@
       return;
     }
 
-    // デッキを最後まで消化したら再生成（2巡目へ）
     if (qaIndex >= qaDeck.length) {
       resetQaDeck();
     }
@@ -488,14 +516,12 @@
 
     qaProgress.textContent = `進捗: ${qaIndex + 1} / ${qaDeck.length}`;
 
-    // 答えを隠す
     qaAnswerBox.classList.add("hidden");
     qaHint.classList.remove("hidden");
 
     qaIndex++;
   }
 
-  // モード切替イベント
   btnListMode.addEventListener("click", () => {
     currentMode = "list";
     btnListMode.classList.add("active");
@@ -517,7 +543,6 @@
     showNextQaQuestion();
   });
 
-  // カードクリックで答え表示
   qaCard.addEventListener("click", () => {
     if (!currentQaItem) return;
     if (qaAnswerBox.classList.contains("hidden")) {
@@ -526,19 +551,16 @@
     }
   });
 
-  // 次の問題へ
   nextQaBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     showNextQaQuestion();
   });
 
-  // 順序変更時
   orderSelect.addEventListener("change", () => {
     resetQaDeck();
     showNextQaQuestion();
   });
 
-  // 検索・カテゴリー絞り込み連動
   categoryFilter.addEventListener("change", () => {
     if (currentMode === "list") {
       renderList();
@@ -557,7 +579,6 @@
     }
   });
 
-  // 初期表示
   renderList();
 </script>
 
