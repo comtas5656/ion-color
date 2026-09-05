@@ -206,7 +206,7 @@
     }
 
     .qa-btn {
-      margin-top: 25px;
+      margin-top: 20px;
       padding: 12px 30px;
       font-size: 16px;
       font-weight: bold;
@@ -221,6 +221,12 @@
 
     .qa-btn:hover {
       background-color: #219150;
+    }
+
+    .qa-progress {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 12px;
     }
 
     .hidden {
@@ -248,7 +254,7 @@
     <button class="tab-btn" id="btnQaMode">1問1答モード</button>
   </div>
 
-  <!-- 絞り込みコントロール -->
+  <!-- 絞り込み・設定コントロール -->
   <div class="controls">
     <select id="categoryFilter">
       <option value="ALL">すべてのカテゴリー</option>
@@ -258,6 +264,13 @@
       <option value="気体・単体・結晶">気体・単体・結晶</option>
       <option value="呈色・検出反応">呈色・検出反応</option>
     </select>
+    
+    <!-- 1問1答専用：出題順序の設定 -->
+    <select id="orderSelect" class="hidden">
+      <option value="random">出題順: ランダム（全問被りなし）</option>
+      <option value="sequential">出題順: 順番通り</option>
+    </select>
+
     <input type="text" id="searchInput" placeholder="物質名やキーワードで検索...">
   </div>
 
@@ -270,6 +283,7 @@
   <!-- 1問1答モードエリア -->
   <div id="qaModeArea" class="hidden">
     <div class="qa-container">
+      <div class="qa-progress" id="qaProgress">進捗: 0 / 0</div>
       <div class="qa-card" id="qaCard">
         <span class="card-category" id="qaCategory">-</span>
         <div class="card-name" id="qaName" style="font-size: 24px; margin: 15px 0;">-</div>
@@ -357,9 +371,12 @@
   ];
 
   let currentMode = "list"; // "list" または "qa"
+  let qaDeck = [];          // 現在の出題キュー
+  let qaIndex = 0;          // 現在のキュー内のインデックス
   let currentQaItem = null;
 
   const categoryFilter = document.getElementById("categoryFilter");
+  const orderSelect = document.getElementById("orderSelect");
   const searchInput = document.getElementById("searchInput");
   const cardGrid = document.getElementById("cardGrid");
   const countInfo = document.getElementById("countInfo");
@@ -376,6 +393,7 @@
   const qaColor = document.getElementById("qaColor");
   const qaAnswerBox = document.getElementById("qaAnswerBox");
   const qaHint = document.getElementById("qaHint");
+  const qaProgress = document.getElementById("qaProgress");
   const nextQaBtn = document.getElementById("nextQaBtn");
 
   // フィルタリング処理
@@ -415,32 +433,66 @@
     countInfo.textContent = `表示中: ${filtered.length} 件 / 全 ${colorData.length} 件`;
   }
 
-  // 1問1答データセット
-  function nextQaQuestion() {
+  // 配列のシャッフル（フィッシャー–イェーツ）
+  function shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // 1問1答用のデッキ（出題キュー）を再構築
+  function resetQaDeck() {
     const filtered = getFilteredData();
     if (filtered.length === 0) {
+      qaDeck = [];
+      qaIndex = 0;
+      return;
+    }
+
+    if (orderSelect.value === "random") {
+      qaDeck = shuffle(filtered);
+    } else {
+      qaDeck = [...filtered];
+    }
+    qaIndex = 0;
+  }
+
+  // 1問1答画面更新
+  function showNextQaQuestion() {
+    if (qaDeck.length === 0) {
       qaCategory.textContent = "-";
       qaName.textContent = "該当する問題がありません";
       qaNote.textContent = "条件を変更してください";
       qaColor.textContent = "-";
+      qaProgress.textContent = "進捗: 0 / 0";
       qaAnswerBox.classList.add("hidden");
       qaHint.classList.add("hidden");
       currentQaItem = null;
       return;
     }
 
-    // ランダムに選出
-    const randomIndex = Math.floor(Math.random() * filtered.length);
-    currentQaItem = filtered[randomIndex];
+    // デッキを最後まで消化したら再生成（2巡目へ）
+    if (qaIndex >= qaDeck.length) {
+      resetQaDeck();
+    }
+
+    currentQaItem = qaDeck[qaIndex];
 
     qaCategory.textContent = currentQaItem.category;
     qaName.textContent = currentQaItem.name;
     qaNote.textContent = currentQaItem.note;
     qaColor.textContent = currentQaItem.color;
 
+    qaProgress.textContent = `進捗: ${qaIndex + 1} / ${qaDeck.length}`;
+
     // 答えを隠す
     qaAnswerBox.classList.add("hidden");
     qaHint.classList.remove("hidden");
+
+    qaIndex++;
   }
 
   // モード切替イベント
@@ -450,6 +502,7 @@
     btnQaMode.classList.remove("active");
     listModeArea.classList.remove("hidden");
     qaModeArea.classList.add("hidden");
+    orderSelect.classList.add("hidden");
     renderList();
   });
 
@@ -459,7 +512,9 @@
     btnListMode.classList.remove("active");
     qaModeArea.classList.remove("hidden");
     listModeArea.classList.add("hidden");
-    nextQaQuestion();
+    orderSelect.classList.remove("hidden");
+    resetQaDeck();
+    showNextQaQuestion();
   });
 
   // カードクリックで答え表示
@@ -473,22 +528,36 @@
 
   // 次の問題へ
   nextQaBtn.addEventListener("click", (e) => {
-    e.stopPropagation(); // カード側のクリックイベント発火防止
-    nextQaQuestion();
+    e.stopPropagation();
+    showNextQaQuestion();
   });
 
-  // 検索・絞り込み連動
+  // 順序変更時
+  orderSelect.addEventListener("change", () => {
+    resetQaDeck();
+    showNextQaQuestion();
+  });
+
+  // 検索・カテゴリー絞り込み連動
   categoryFilter.addEventListener("change", () => {
-    if (currentMode === "list") renderList();
-    else nextQaQuestion();
+    if (currentMode === "list") {
+      renderList();
+    } else {
+      resetQaDeck();
+      showNextQaQuestion();
+    }
   });
 
   searchInput.addEventListener("input", () => {
-    if (currentMode === "list") renderList();
-    else nextQaQuestion();
+    if (currentMode === "list") {
+      renderList();
+    } else {
+      resetQaDeck();
+      showNextQaQuestion();
+    }
   });
 
-  // 初期化
+  // 初期表示
   renderList();
 </script>
 
