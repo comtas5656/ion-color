@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>イオン・沈殿の色 暗記カード</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f4f6f8;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .filter-container {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .filter-btn {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .filter-btn.active {
+      background-color: #007bff;
+      color: #fff;
+      border-color: #007bff;
+    }
+    .card {
+      width: 320px;
+      height: 200px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .category-tag {
+      font-size: 0.8rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background-color: #e9ecef;
+      color: #495057;
+      font-weight: bold;
+    }
+    .ion-name {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #333;
+      margin: auto 0;
+    }
+    .color-container {
+      height: 2.2rem; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .color-name {
+      font-size: 1.4rem;
+      font-weight: bold;
+      visibility: hidden;
+    }
+    .color-name.show {
+      visibility: visible;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- カテゴリ絞り込みボタン -->
+  <div class="filter-container">
+    <button class="filter-btn active" onclick="filterData('all')">すべて</button>
+    <button class="filter-btn" onclick="filterData('水溶液')">水溶液</button>
+    <button class="filter-btn" onclick="filterData('沈殿')">沈殿</button>
+    <button class="filter-btn" onclick="filterData('錯イオン')">錯イオン</button>
+  </div>
+
+  <div class="card" onclick="toggleColor()">
+    <span class="category-tag" id="tag">水溶液</span>
+    <div class="ion-name" id="ion">Cu²⁺</div>
+    <div class="color-container">
+      <div class="color-name" id="color" style="color: #007bff;">青色</div>
+    </div>
+  </div>
+  <p style="color: #666; font-size: 0.85rem; margin-top: 12px;">カードをタップすると答えが表示されます</p>
+
+  <div class="controls">
+    <button class="btn btn-secondary" onclick="shuffleData()">シャッフル</button>
+    <button class="btn" onclick="nextCard()">次のカード</button>
+  </div>
+
+  <script>
+    // 高校化学・大学受験で必須の主要データ一覧
+    const masterData = [
+      // --- 水溶液の色 ---
+      { name: 'Cu²⁺', color: '青色', code: '#007bff', type: '水溶液' },
+      { name: 'Fe²⁺', color: '淡緑色', code: '#2e7d32', type: '水溶液' },
+      { name: 'Fe³⁺', color: '黄褐色', code: '#8d6e63', type: '水溶液' },
+      { name: 'Mn²⁺', color: '淡赤色（ほぼ無色）', code: '#e91e63', type: '水溶液' },
+      { name: 'Cr³⁺', color: '緑色', code: '#388e3c', type: '水溶液' },
+      { name: 'CrO₄²⁻', color: '黄色', code: '#fbc02d', type: '水溶液' },
+      { name: 'Cr₂O₇²⁻', color: '赤橙色', code: '#e65100', type: '水溶液' },
+      { name: 'MnO₄⁻', color: '赤紫色', code: '#8e24aa', type: '水溶液' },
+
+      // --- 主な沈殿の色 ---
+      { name: 'Cu(OH)₂', color: '青白色沈殿', code: '#0288d1', type: '沈殿' },
+      { name: 'CuS', color: '黒色沈殿', code: '#212121', type: '沈殿' },
+      { name: 'Fe(OH)₂', color: '緑白色沈殿', code: '#4fb3bf', type: '沈殿' },
+      { name: 'Fe(OH)₃', color: '赤褐色沈殿', code: '#6d4c41', type: '沈殿' },
+      { name: 'FeS', color: '黒色沈殿', code: '#212121', type: '沈殿' },
+      { name: 'AgCl', color: '白色沈殿', code: '#78909c', type: '沈殿' },
+      { name: 'AgBr', color: '淡黄色沈殿', code: '#fbc02d', type: '沈殿' },
+      { name: 'AgI', color: '黄色沈殿', code: '#fbc02d', type: '沈殿' },
+      { name: 'Ag₂O', color: '褐色沈殿', code: '#5d4037', type: '沈殿' },
+      { name: 'Ag₂S', color: '黒色沈殿', code: '#212121', type: '沈殿' },
+      { name: 'PbCl₂', color: '白色沈殿（熱湯に溶ける）', code: '#78909c', type: '沈殿' },
+      { name: 'PbSO₄', color: '白色沈殿', code: '#78909c', type: '沈殿' },
+      { name: 'PbS', color: '黒色沈殿', code: '#212121', type: '沈殿' },
+      { name: 'BaSO₄', color: '白色沈殿', code: '#78909c', type: '沈殿' },
+      { name: 'CaCO₃', color: '白色沈殿', code: '#78909c', type: '沈殿' },
+      { name: 'ZnS', color: '白色沈殿（中性・塩基性）', code: '#78909c', type: '沈殿' },
+
+      // --- 錯イオン・呈色反応 ---
+      { name: '[Cu(NH₃)₄]²⁺', color: '深青色水溶液', code: '#1a237e', type: '錯イオン' },
+      { name: '[Fe(SCN)]²⁺', color: '血赤色水溶液', code: '#b71c1c', type: '錯イオン' },
+      { name: '[Fe(CN)₆]⁴⁻ + Fe³⁺', color: '濃青色沈殿（ベルリン青）', code: '#0d47a1', type: '錯イオン' },
+      { name: '[Fe(CN)₆]³⁻ + Fe²⁺', color: '濃青色沈殿', code: '#0d47a1', type: '錯イオン' },
+      { name: '[Ag(NH₃)₂]⁺', color: '無色水溶液', code: '#546e7a', type: '錯イオン' },
+      { name: '[Zn(NH₃)₄]²⁺', color: '無色水溶液', code: '#546e7a', type: '錯イオン' },
+      { name: '[Al(OH)₄]⁻', color: '無色水溶液', code: '#546e7a', type: '錯イオン' }
+    ];
+
+    let currentList = [...masterData];
+    let currentIndex = 0;
+
+    function renderCard() {
+      const item = currentList[currentIndex];
+      document.getElementById('ion').textContent = item.name;
+      document.getElementById('tag').textContent = item.type;
+      
+      const colorEl = document.getElementById('color');
+      colorEl.textContent = item.color;
+      colorEl.style.color = item.code;
+      colorEl.classList.remove('show');
+    }
+
+    function toggleColor() {
+      const colorEl = document.getElementById('color');
+      colorEl.classList.toggle('show');
+    }
+
+    function nextCard() {
+      if (currentList.length === 0) return;
+      currentIndex = (currentIndex + 1) % currentList.length;
+      renderCard();
+    }
+
+    function shuffleData() {
+      for (let i = currentList.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [currentList[i], currentList[j]] = [currentList[j], currentList[i]];
+      }
+      currentIndex = 0;
+      renderCard();
+    }
+
+    function filterData(type) {
+      // ボタンの見た目切り替え
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // データの絞り込み
+      if (type === 'all') {
+        currentList = [...masterData];
+      } else {
+        currentList = masterData.filter(item => item.type === type);
+      }
+      
+      currentIndex = 0;
+      renderCard();
+    }
+
+    // 初期表示
+    renderCard();
+  </script>
+</body>
+</html>
