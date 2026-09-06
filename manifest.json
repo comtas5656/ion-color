@@ -1,6 +1,6 @@
 {
   "name": "無機いろ暗記倶楽部",
-  "short_name": "いろ暗記",
+  "short_name": "無機いろ暗記",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f4f6f8",
