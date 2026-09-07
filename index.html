@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="app-version" content="1.0.3">
   <title>無機いろ暗記倶楽部</title>
 
   <!-- アイコン設定（PCタブ用 & iOSホーム画面用） -->
-  <link rel="icon" href="icon.png?v=1.0.2" type="image/png">
-  <link rel="apple-touch-icon" href="icon.png?v=1.0.2">
+  <link rel="icon" href="icon.png?v=1.0.3" type="image/png">
+  <link rel="apple-touch-icon" href="icon.png?v=1.0.3">
 
   <!-- PWA設定（Android / Chrome用） -->
-  <link rel="manifest" href="manifest.json?v=1.0.2">
+  <link rel="manifest" href="manifest.json?v=1.0.3">
   <meta name="theme-color" content="#2c3e50">
 
   <!-- iOS (Safari) 用のPWA全画面表示設定 -->
@@ -30,6 +31,15 @@
       --card-bg: #ffffff;
       --text-color: #333333;
       --border-color: #e9ecef;
+
+      /* カテゴリー別イメージカラー定義 */
+      --cat-default: #3498db;
+      --cat-halogen: #8e44ad;   /* 紫 */
+      --cat-ion: #16a085;       /* アクアグリーン */
+      --cat-precipitate: #d35400; /* アンバー・土色 */
+      --cat-gas: #27ae60;       /* エメラルド */
+      --cat-color-test: #c0392b;/* マゼンタ・赤 */
+      --cat-flame: #e67e22;     /* オレンジ */
     }
 
     body {
@@ -116,6 +126,7 @@
       background-color: var(--card-bg);
       border-radius: 8px;
       border: 1px solid var(--border-color);
+      border-left: 5px solid var(--secondary-color);
       padding: 15px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       transition: transform 0.2s, box-shadow 0.2s;
@@ -127,6 +138,14 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
+    /* カテゴリーごとの左端線 */
+    .card.border-ハロゲン { border-left-color: var(--cat-halogen); }
+    .card.border-イオン { border-left-color: var(--cat-ion); }
+    .card.border-沈殿 { border-left-color: var(--cat-precipitate); }
+    .card.border-気体・単体・結晶 { border-left-color: var(--cat-gas); }
+    .card.border-呈色・検出反応 { border-left-color: var(--cat-color-test); }
+    .card.border-炎色反応 { border-left-color: var(--cat-flame); }
+
     .card-category {
       display: inline-block;
       font-size: 12px;
@@ -137,6 +156,14 @@
       border-radius: 4px;
       margin-bottom: 8px;
     }
+
+    /* カテゴリーごとのバッジ背景色 */
+    .cat-ハロゲン { background-color: var(--cat-halogen) !important; }
+    .cat-イオン { background-color: var(--cat-ion) !important; }
+    .cat-沈殿 { background-color: var(--cat-precipitate) !important; }
+    .cat-気体・単体・結晶 { background-color: var(--cat-gas) !important; }
+    .cat-呈色・検出反応 { background-color: var(--cat-color-test) !important; }
+    .cat-炎色反応 { background-color: var(--cat-flame) !important; }
 
     .card-name {
       font-size: 17px;
@@ -184,31 +211,27 @@
       align-items: center;
       margin-top: 5px;
       width: 100%;
-      padding-bottom: 70px; /* 下部固定ボタン用の余白 */
+      padding-bottom: 70px;
     }
 
     .qa-card {
       width: 100%;
       max-width: 500px;
       background-color: #fff;
-      border: 2px solid var(--secondary-color);
+      border: 3px solid var(--secondary-color);
       border-radius: 12px;
       padding: 15px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       text-align: center;
       cursor: pointer;
       user-select: none;
-      min-height: 260px; /* 答え表示時との高さ変化を抑える */
+      min-height: 260px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
       transition: border-color 0.2s;
       position: relative;
-    }
-
-    .qa-card:hover {
-      border-color: #1d6fa5;
     }
 
     .qa-hint {
@@ -311,7 +334,6 @@
         min-height: 240px;
       }
 
-      /* スマホでは「次の問題へ」ボタンを画面下部に固定表示 */
       .qa-btn {
         position: fixed;
         bottom: 15px;
@@ -339,9 +361,9 @@
   <div class="controls">
     <select id="categoryFilter">
       <option value="ALL">すべてのカテゴリー</option>
-      <option value="ハロゲン・ハロゲン化物">ハロゲン・ハロゲン化物</option>
-      <option value="イオン・錯イオン">イオン・錯イオン</option>
-      <option value="沈殿・難溶性塩">沈殿・難溶性塩</option>
+      <option value="ハロゲン">ハロゲン</option>
+      <option value="イオン">イオン</option>
+      <option value="沈殿">沈殿</option>
       <option value="気体・単体・結晶">気体・単体・結晶</option>
       <option value="呈色・検出反応">呈色・検出反応</option>
       <option value="炎色反応">炎色反応</option>
@@ -349,7 +371,7 @@
     
     <!-- 1問1答専用：出題順序の設定 -->
     <select id="orderSelect" class="hidden">
-      <option value="random">出題順: ランダム（全問被りなし）</option>
+      <option value="random">出題順: ランダム</option>
       <option value="sequential">出題順: 順番通り</option>
       <option value="reviewOnly">出題順: 要復習チェックのみ</option>
     </select>
@@ -394,9 +416,9 @@
 
 <script>
   // ==========================================
-  // 自動更新検知システム（バージョン: 1.0.2）
+  // 自動更新検知システム（バージョン: 1.0.3）
   // ==========================================
-  const CURRENT_VERSION = "1.0.2";
+  const CURRENT_VERSION = "1.0.3";
 
   async function checkAppVersion() {
     try {
@@ -426,44 +448,44 @@
   // ==========================================
   const colorData = [
     // 1. ハロゲン単体およびハロゲン化物
-    { id: 1, category: "ハロゲン・ハロゲン化物", name: "フッ素 F₂", color: "淡黄色", note: "常温で気体" },
-    { id: 2, category: "ハロゲン・ハロゲン化物", name: "塩素 Cl₂", color: "黄緑色", note: "常温で気体・刺激臭" },
-    { id: 3, category: "ハロゲン・ハロゲン化物", name: "臭素 Br₂", color: "赤褐色", note: "常温で液体" },
-    { id: 4, category: "ハロゲン・ハロゲン化物", name: "ヨウ素 I₂", color: "黒紫色", note: "常温で固体・昇華性" },
-    { id: 5, category: "ハロゲン・ハロゲン化物", name: "塩化銀 AgCl", color: "白色", note: "沈殿・水に不溶・感光性" },
-    { id: 6, category: "ハロゲン・ハロゲン化物", name: "臭化銀 AgBr", color: "淡黄色", note: "沈殿・水に不溶・感光性" },
-    { id: 7, category: "ハロゲン・ハロゲン化物", name: "ヨウ化銀 AgI", color: "黄色", note: "沈殿・水に不溶・感光性" },
-    { id: 8, category: "ハロゲン・ハロゲン化物", name: "フッ化銀 AgF は沈殿するか？", color: "沈殿しない", note: "（他のハロゲン化銀と異なる）" },
+    { id: 1, category: "ハロゲン", name: "フッ素 F₂", color: "淡黄色", note: "常温で気体" },
+    { id: 2, category: "ハロゲン", name: "塩素 Cl₂", color: "黄緑色", note: "常温で気体・刺激臭" },
+    { id: 3, category: "ハロゲン", name: "臭素 Br₂", color: "赤褐色", note: "常温で液体" },
+    { id: 4, category: "ハロゲン", name: "ヨウ素 I₂", color: "黒紫色", note: "常温で固体・昇華性" },
+    { id: 5, category: "ハロゲン", name: "塩化銀 AgCl", color: "白色", note: "沈殿・水に不溶・感光性" },
+    { id: 6, category: "ハロゲン", name: "臭化銀 AgBr", color: "淡黄色", note: "沈殿・水に不溶・感光性" },
+    { id: 7, category: "ハロゲン", name: "ヨウ化銀 AgI", color: "黄色", note: "沈殿・水に不溶・感光性" },
+    { id: 8, category: "ハロゲン", name: "フッ化銀 AgF は沈殿するか？", color: "沈殿しない", note: "（他のハロゲン化銀と異なる）" },
 
     // 2. 水溶液・イオン・錯イオン
-    { id: 9, category: "イオン・錯イオン", name: "鉄(II)イオン Fe²⁺", color: "淡緑色", note: "水溶液" },
-    { id: 10, category: "イオン・錯イオン", name: "鉄(III)イオン Fe³⁺", color: "黄褐色", note: "水溶液" },
-    { id: 11, category: "イオン・錯イオン", name: "テトラアクア銅(II)イオン [Cu(H₂O)₄]²⁺", color: "青色", note: "水溶液（普通 Cu²⁺ と書く）" },
-    { id: 12, category: "イオン・錯イオン", name: "テトラアンミン銅(II)イオン [Cu(NH₃)₄]²⁺", color: "深青色", note: "Cu²⁺ にアンモニア水 → 一時 Cu(OH)₂ 青白色沈殿 → アンモニア水過剰で [Cu(NH₃)₄]²⁺ になり溶解" },
-    { id: 13, category: "イオン・錯イオン", name: "Fe³⁺ に KSCN 溶液を加える", color: "血赤色", note: "Fe³⁺ と SCN⁻ による錯イオンの色" },
-    { id: 14, category: "イオン・錯イオン", name: "ヘキサシアニド鉄(II)酸イオン [Fe(CN)₆]⁴⁻", color: "淡黄色", note: "水溶液" },
-    { id: 15, category: "イオン・錯イオン", name: "ヘキサシアニド鉄(III)酸イオン [Fe(CN)₆]³⁻", color: "黄色", note: "水溶液" },
-    { id: 17, category: "イオン・錯イオン", name: "クロム酸イオン CrO₄²⁻", color: "黄色", note: "塩基性条件で安定" },
-    { id: 18, category: "イオン・錯イオン", name: "二クロム酸イオン Cr₂O₇²⁻", color: "赤橙色", note: "酸性条件で安定・酸化剤" },
-    { id: 16, category: "イオン・錯イオン", name: "クロム(III)イオン Cr³⁺", color: "緑色", note: "二クロム酸イオンが還元された後など" },
-    { id: 19, category: "イオン・錯イオン", name: "過マンガン酸イオン MnO₄⁻", color: "赤紫色", note: "強力な酸化剤" },
-    { id: 20, category: "イオン・錯イオン", name: "マンガン(II)イオン Mn²⁺", color: "淡紅色（ほぼ無色）", note: "過マンガン酸イオンが還元された後" },
+    { id: 9, category: "イオン", name: "鉄(II)イオン Fe²⁺", color: "淡緑色", note: "水溶液" },
+    { id: 10, category: "イオン", name: "鉄(III)イオン Fe³⁺", color: "黄褐色", note: "水溶液" },
+    { id: 11, category: "イオン", name: "テトラアクア銅(II)イオン [Cu(H₂O)₄]²⁺", color: "青色", note: "水溶液（普通 Cu²⁺ と書く）" },
+    { id: 12, category: "イオン", name: "テトラアンミン銅(II)イオン [Cu(NH₃)₄]²⁺", color: "深青色", note: "Cu²⁺ にアンモニア水 → 一時 Cu(OH)₂ 青白色沈殿 → アンモニア水過剰で [Cu(NH₃)₄]²⁺ になり溶解" },
+    { id: 13, category: "イオン", name: "Fe³⁺ に KSCN 溶液を加える", color: "血赤色", note: "Fe³⁺ と SCN⁻ による錯イオンの色" },
+    { id: 14, category: "イオン", name: "ヘキサシアニド鉄(II)酸イオン [Fe(CN)₆]⁴⁻", color: "淡黄色", note: "水溶液" },
+    { id: 15, category: "イオン", name: "ヘキサシアニド鉄(III)酸イオン [Fe(CN)₆]³⁻", color: "黄色", note: "水溶液" },
+    { id: 17, category: "イオン", name: "クロム酸イオン CrO₄²⁻", color: "黄色", note: "塩基性条件で安定" },
+    { id: 18, category: "イオン", name: "二クロム酸イオン Cr₂O₇²⁻", color: "赤橙色", note: "酸性条件で安定・酸化剤" },
+    { id: 16, category: "イオン", name: "クロム(III)イオン Cr³⁺", color: "緑色", note: "二クロム酸イオンが還元された後など" },
+    { id: 19, category: "イオン", name: "過マンガン酸イオン MnO₄⁻", color: "赤紫色", note: "強力な酸化剤" },
+    { id: 20, category: "イオン", name: "マンガン(II)イオン Mn²⁺", color: "淡紅色（ほぼ無色）", note: "過マンガン酸イオンが還元された後" },
 
     // 3. 沈殿・水酸化物・酸化物・硫化物
-    { id: 21, category: "沈殿・難溶性塩", name: "水酸化鉄(II) Fe(OH)₂", color: "緑白色", note: "沈殿" },
-    { id: 22, category: "沈殿・難溶性塩", name: "水酸化鉄(III) Fe(OH)₃", color: "赤褐色", note: "沈殿（コロイドも同色）" },
-    { id: 23, category: "沈殿・難溶性塩", name: "水酸化銅(II) Cu(OH)₂", color: "青白色", note: "沈殿" },
-    { id: 24, category: "沈殿・難溶性塩", name: "酸化銀 Ag₂O", color: "褐色", note: "Ag⁺ に塩基を加えると生じる沈殿" },
-    { id: 25, category: "沈殿・難溶性塩", name: "水酸化アルミニウム Al(OH)₃", color: "白色", note: "両性元素の沈殿・過剰NaOHで溶解" },
-    { id: 26, category: "沈殿・難溶性塩", name: "水酸化亜鉛 Zn(OH)₂", color: "白色", note: "両性元素の沈殿・過剰NaOH/NH₃で溶解" },
-    { id: 27, category: "沈殿・難溶性塩", name: "一般的な硫化物 (FeS, CuS, Ag₂S など)", color: "黒色", note: "沈殿" },
-    { id: 28, category: "沈殿・難溶性塩", name: "硫化カドミウム CdS", color: "黄色", note: "硫化物沈殿の例外色" },
-    { id: 29, category: "沈殿・難溶性塩", name: "硫化亜鉛 ZnS", color: "白色", note: "硫化物沈殿の例外色" },
-    { id: 30, category: "沈殿・難溶性塩", name: "硫化マンガン MnS", color: "淡赤色", note: "硫化物沈殿の例外色" },
-    { id: 31, category: "沈殿・難溶性塩", name: "クロム酸銀 Ag₂CrO₄", color: "赤褐色", note: "沈殿" },
-    { id: 32, category: "沈殿・難溶性塩", name: "クロム酸バリウム BaCrO₄", color: "黄色", note: "沈殿" },
-    { id: 33, category: "沈殿・難溶性塩", name: "クロム酸鉛 PbCrO₄", color: "黄色", note: "沈殿" },
-    { id: 34, category: "沈殿・難溶性塩", name: "Fe²⁺ に [Fe(CN)₆]³⁻ または Fe³⁺ に [Fe(CN)₆]⁴⁻", color: "濃青色", note: "錯塩の沈殿" },
+    { id: 21, category: "沈殿", name: "水酸化鉄(II) Fe(OH)₂", color: "緑白色", note: "沈殿" },
+    { id: 22, category: "沈殿", name: "水酸化鉄(III) Fe(OH)₃", color: "赤褐色", note: "沈殿（コロイドも同色）" },
+    { id: 23, category: "沈殿", name: "水酸化銅(II) Cu(OH)₂", color: "青白色", note: "沈殿" },
+    { id: 24, category: "沈殿", name: "酸化銀 Ag₂O", color: "褐色", note: "Ag⁺ に塩基を加えると生じる沈殿" },
+    { id: 25, category: "沈殿", name: "水酸化アルミニウム Al(OH)₃", color: "白色", note: "両性元素の沈殿・過剰NaOHで溶解" },
+    { id: 26, category: "沈殿", name: "水酸化亜鉛 Zn(OH)₂", color: "白色", note: "両性元素の沈殿・過剰NaOH/NH₃で溶解" },
+    { id: 27, category: "沈殿", name: "一般的な硫化物 (FeS, CuS, Ag₂S など)", color: "黒色", note: "沈殿" },
+    { id: 28, category: "沈殿", name: "硫化カドミウム CdS", color: "黄色", note: "硫化物沈殿の例外色" },
+    { id: 29, category: "沈殿", name: "硫化亜鉛 ZnS", color: "白色", note: "硫化物沈殿の例外色" },
+    { id: 30, category: "沈殿", name: "硫化マンガン MnS", color: "淡赤色", note: "硫化物沈殿の例外色" },
+    { id: 31, category: "沈殿", name: "クロム酸銀 Ag₂CrO₄", color: "赤褐色", note: "沈殿" },
+    { id: 32, category: "沈殿", name: "クロム酸バリウム BaCrO₄", color: "黄色", note: "沈殿" },
+    { id: 33, category: "沈殿", name: "クロム酸鉛 PbCrO₄", color: "黄色", note: "沈殿" },
+    { id: 34, category: "沈殿", name: "Fe²⁺ に [Fe(CN)₆]³⁻ または Fe³⁺ に [Fe(CN)₆]⁴⁻", color: "濃青色", note: "錯塩の沈殿" },
 
     // 4. 有色気体・単体・結晶
     { id: 35, category: "気体・単体・結晶", name: "オゾン O₃", color: "淡青色", note: "気体・特異臭" },
@@ -521,6 +543,18 @@
   const nextQaBtn = document.getElementById("nextQaBtn");
   const qaReviewCheck = document.getElementById("qaReviewCheck");
 
+  function getCategoryColorCode(cat) {
+    switch(cat) {
+      case "ハロゲン": return "#8e44ad";
+      case "イオン": return "#16a085";
+      case "沈殿": return "#d35400";
+      case "気体・単体・結晶": return "#27ae60";
+      case "呈色・検出反応": return "#c0392b";
+      case "炎色反応": return "#e67e22";
+      default: return "#3498db";
+    }
+  }
+
   function getFilteredData() {
     const selectedCategory = categoryFilter.value;
     const keyword = searchInput.value.toLowerCase().trim();
@@ -540,9 +574,9 @@
 
     filtered.forEach(item => {
       const card = document.createElement("div");
-      card.className = "card";
+      card.className = `card border-${item.category}`;
       card.innerHTML = `
-        <span class="card-category">${item.category}</span>
+        <span class="card-category cat-${item.category}">${item.category}</span>
         <div class="card-name">${item.name}</div>
         <div class="card-color-box">
           <span>色:</span>
@@ -589,6 +623,8 @@
   function showNextQaQuestion() {
     if (qaDeck.length === 0) {
       qaCategory.textContent = "-";
+      qaCategory.className = "card-category";
+      qaCard.style.borderColor = "var(--secondary-color)";
       if (orderSelect.value === "reviewOnly") {
         qaName.textContent = "復習用（要復習）の問題はありません！";
         qaNote.textContent = "すべての問題をクリアしたか、チェックが入っていません";
@@ -626,6 +662,9 @@
     currentQaItem = qaDeck[qaIndex];
 
     qaCategory.textContent = currentQaItem.category;
+    qaCategory.className = `card-category cat-${currentQaItem.category}`;
+    qaCard.style.borderColor = getCategoryColorCode(currentQaItem.category);
+
     qaName.textContent = currentQaItem.name;
     qaNote.textContent = currentQaItem.note;
     qaColor.textContent = currentQaItem.color;
