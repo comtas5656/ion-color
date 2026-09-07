@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <!-- PCブラウザのタブ用（ファビコン） -->
-  <link rel="icon" href="icon.png" type="image/png">
-
-  <!-- スマホの「ホーム画面に追加」用アイコン -->
-  <link rel="apple-touch-icon" href="icon.png">
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- バージョン管理用メタタグ（1.0.2へ更新） -->
-  <meta name="app-version" content="1.0.2">
-  
-  <!-- キャッシュ無効化ヘッダー -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-
   <title>無機いろ暗記倶楽部</title>
+
+  <!-- アイコン設定（PCタブ用 & iOSホーム画面用） -->
+  <link rel="icon" href="icon.png?v=1.0.2" type="image/png">
+  <link rel="apple-touch-icon" href="icon.png?v=1.0.2">
+
+  <!-- PWA設定（Android / Chrome用） -->
+  <link rel="manifest" href="manifest.json?v=1.0.2">
+  <meta name="theme-color" content="#2c3e50">
+
+  <!-- iOS (Safari) 用のPWA全画面表示設定 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="無機いろ暗記">
+
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
