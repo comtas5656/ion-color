@@ -51,6 +51,69 @@
       line-height: 1.6;
     }
 
+    /* バージョン更新モーダルダイアログ */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+
+    .modal-content {
+      background-color: #ffffff;
+      border-radius: 12px;
+      max-width: 480px;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .modal-body {
+      font-size: 13px;
+      color: #444;
+      line-height: 1.6;
+      max-height: 60vh;
+      overflow-y: auto;
+      margin-bottom: 16px;
+    }
+
+    .modal-footer {
+      text-align: right;
+    }
+
+    .modal-btn {
+      background-color: var(--secondary-color);
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
     .container {
       max-width: 1000px;
       margin: 0 auto;
@@ -427,19 +490,33 @@
 <body>
 
 <div class="container">
-  <h1>無機いろ暗記倶楽部 <span class="version-badge" id="versionBadge">v1.1.0</span></h1>
-
-  <!-- バージョンアップお知らせバナー -->
+  <!-- バージョン更新通知バナー -->
   <div id="versionNotice" class="version-notice hidden">
     <div class="version-notice-content">
-      <div class="version-notice-title">
-        <span>🎉</span> <span id="versionNoticeTitle">アプリが更新されました！</span>
+      <span class="version-notice-title" id="versionNoticeTitle">アプリが更新されました</span>
+      <span id="versionNoticeDetail">バージョン情報が更新されました。</span>
+    </div>
+    <button class="version-notice-close" id="closeNoticeBtn">了解</button>
+  </div>
+
+  <!-- 更新内容お知らせモーダルダイアログ -->
+  <div id="updateModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">🎉 バージョンアップのお知らせ</div>
       </div>
-      <div class="version-notice-detail" id="versionNoticeDetail">
-        バージョンアップのお知らせ情報を表示します。
+      <div class="modal-body" id="modalBody">
+        <!-- JSで動的に追加されます -->
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn" id="closeModalBtn">閉じる</button>
       </div>
     </div>
-    <button id="closeNoticeBtn" class="version-notice-btn">了解</button>
+  </div>
+
+  <div class="header-container">
+    <h1>無機いろ暗記倶楽部
+    <span class="version-badge" id="versionBadge">v1.1.0</span></h1>
   </div>
 
   <!-- モード切替 -->
@@ -507,63 +584,130 @@
 
 <script>
   // ==========================================
-  // 自動更新検知システム（バージョン: 1.1.0）
+  // バージョン管理・更新履歴設定
   // ==========================================
   const CURRENT_VERSION = "1.1.0";
   const STORAGE_KEY_VERSION = "inorganic_color_app_version";
 
-  function checkVersionUpdate() {
+  // 更新履歴データ（配列形式：新しい順）
+  const UPDATES_HISTORY = [
+    {
+      version: "1.1.0",
+      date: "2026-09-06",
+      changes: [
+        "色使いを改めました"
+      ]
+    },
+    {
+      version: "1.0.1",
+      date: "2026-09-06",
+      changes: [
+        "基本機能を増強しました"
+      ]
+    },
+    {
+      version: "1.0.0",
+      date: "2026-09-05",
+      changes: [
+        "無機いろ暗記倶楽部を新規公開"
+      ]
+    }
+  ];
+
+function checkVersionUpdate() {
     const savedVersion = localStorage.getItem(STORAGE_KEY_VERSION);
+    const versionBadge = document.getElementById("versionBadge");
     const versionNotice = document.getElementById("versionNotice");
     const versionNoticeTitle = document.getElementById("versionNoticeTitle");
     const versionNoticeDetail = document.getElementById("versionNoticeDetail");
-    const versionBadge = document.getElementById("versionBadge");
 
     if (versionBadge) {
       versionBadge.textContent = `v${CURRENT_VERSION}`;
     }
 
+    // --- バージョンチェック判定 ---
     if (!savedVersion) {
-      versionNoticeTitle.textContent = "アプリへようこそ！";
-      versionNoticeDetail.textContent = `無機いろ暗記倶楽部 (v${CURRENT_VERSION}) をご利用いただけます。`;
-      versionNotice.classList.remove("hidden");
-    } else if (savedVersion !== CURRENT_VERSION) {
-      versionNoticeTitle.textContent = "アプリが更新されました！";
-      versionNoticeDetail.textContent = `v${savedVersion} から v${CURRENT_VERSION} にアップデートされました（バージョンお知らせ機能を追加）。`;
-      versionNotice.classList.remove("hidden");
-    }
+      // 初回訪問時
+      if (versionNoticeTitle) versionNoticeTitle.textContent = "アプリへようこそ！";
+      if (versionNoticeDetail) versionNoticeDetail.textContent = `最新バージョン (v${CURRENT_VERSION}) をご利用いただけます。`;
+      if (versionNotice) versionNotice.classList.remove("hidden");
 
-    document.getElementById("closeNoticeBtn").addEventListener("click", () => {
-      localStorage.setItem(STORAGE_KEY_VERSION, CURRENT_VERSION);
-      versionNotice.classList.add("hidden");
-    });
-  }
+      // 最新の更新内容を1つだけモーダル表示
+      openUpdateModal([UPDATES_HISTORY[0]]);
 
-  async function checkAppVersion() {
-    try {
-      const response = await fetch(`${window.location.href.split('?')[0]}?t=${Date.now()}`, {
-        cache: "no-store"
+    } else if (compareVersions(CURRENT_VERSION, savedVersion) > 0) {
+      // バージョンアップ時（savedVersion より CURRENT_VERSION が新しい場合）
+      if (versionNoticeTitle) versionNoticeTitle.textContent = "アプリが更新されました！";
+      if (versionNoticeDetail) versionNoticeDetail.textContent = `v${savedVersion} から v${CURRENT_VERSION} にアップデートされました。`;
+      if (versionNotice) versionNotice.classList.remove("hidden");
+
+      // 保存されているバージョンより新しい更新履歴をすべて取得
+      const newHistories = UPDATES_HISTORY.filter(item => {
+        return compareVersions(item.version, savedVersion) > 0;
       });
-      const text = await response.text();
-      
-      const match = text.match(/<meta\s+name="app-version"\s+content="([^"]+)"/i);
-      if (match && match[1]) {
-        const serverVersion = match[1];
-        if (serverVersion !== CURRENT_VERSION) {
-          if (confirm("新しい問題データ（最新版）が届いています！更新しますか？")) {
-            window.location.reload(true);
-          }
-        }
-      }
-    } catch (e) {
-      console.log("バージョンチェックのスキップ（オフラインまたは通信エラー）");
+
+      openUpdateModal(newHistories.length > 0 ? newHistories : [UPDATES_HISTORY[0]]);
     }
+
+    // --- イベントリスナーの登録 ---
+    const closeNoticeBtn = document.getElementById("closeNoticeBtn");
+    if (closeNoticeBtn) {
+      closeNoticeBtn.onclick = () => {
+        localStorage.setItem(STORAGE_KEY_VERSION, CURRENT_VERSION);
+        if (versionNotice) versionNotice.classList.add("hidden");
+      };
+    } // ← 閉じカッコを追加
+
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    if (closeModalBtn) {
+      closeModalBtn.onclick = () => {
+        localStorage.setItem(STORAGE_KEY_VERSION, CURRENT_VERSION);
+        const updateModal = document.getElementById("updateModal");
+        if (updateModal) updateModal.classList.add("hidden");
+      };
+    }
+
+    // バッジクリックで全履歴表示
+    if (versionBadge) {
+      versionBadge.onclick = () => {
+        openUpdateModal(UPDATES_HISTORY);
+      };
+    }
+  } // ← checkVersionUpdate 関数の閉じカッコを追加
+
+  // モーダル表示用共通関数
+  function openUpdateModal(historyData) {
+    const modal = document.getElementById("updateModal");
+    const modalBody = document.getElementById("modalBody");
+    
+    let html = "";
+    historyData.forEach(item => { // ← histories から historyData に修正
+      html += `<div style="margin-bottom: 12px; border-bottom: 1px dashed #ccc; padding-bottom: 8px;">`;
+      html += `<strong>v${item.version}</strong> <span style="font-size: 11px; color: #666;">(${item.date || ''})</span>`;
+      html += `<ul style="margin: 4px 0 0 18px; padding: 0; font-size: 13px;">`;
+      (item.changes || []).forEach(change => { // ← item.notes から item.changes に修正
+        html += `<li>${change}</li>`;
+      });
+      html += `</ul></div>`;
+    });
+
+    modalBody.innerHTML = html;
+    modal.classList.remove("hidden");
   }
 
-  window.addEventListener("DOMContentLoaded", () => {
-    checkVersionUpdate();
-    checkAppVersion();
-  });
+  // 簡易バージョン比較 (v1 > v2 => 1, v1 < v2 => -1, equal => 0)
+  function compareVersions(v1, v2) {
+    if (!v1 || !v2) return 0;
+    const p1 = v1.split('.').map(Number);
+    const p2 = v2.split('.').map(Number);
+    for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+      const num1 = p1[i] || 0;
+      const num2 = p2[i] || 0;
+      if (num1 > num2) return 1;
+      if (num1 < num2) return -1;
+    }
+    return 0;
+  }
 
   // ==========================================
   // 暗記データベース データ本体
@@ -869,6 +1013,11 @@
   });
 
   renderList();
+
+  // 初期化処理
+  checkVersionUpdate();
+  renderList();
+
 </script>
 
 </body>
