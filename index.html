@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="app-version" content="1.1.0">
+  <meta name="app-version" content="1.1.1">
   <title>無機いろ暗記倶楽部</title>
 
   <!-- アイコン設定（PCタブ用 & iOSホーム画面用） -->
-  <link rel="icon" href="icon.png?v=1.1.0" type="image/png">
-  <link rel="apple-touch-icon" href="icon.png?v=1.1.0">
+  <link rel="icon" href="icon.png?v=1.1.1" type="image/png">
+  <link rel="apple-touch-icon" href="icon.png?v=1.1.1">
 
   <!-- PWA設定（Android / Chrome用） -->
-  <link rel="manifest" href="manifest.json?v=1.1.0">
+  <link rel="manifest" href="manifest.json?v=1.1.1">
   <meta name="theme-color" content="#2c3e50">
 
   <!-- iOS (Safari) 用のPWA全画面表示設定 -->
@@ -67,12 +67,19 @@
     }
 
     .modal-content {
-      background-color: #ffffff;
-      border-radius: 12px;
-      max-width: 480px;
-      width: 100%;
-      padding: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      background: #fff;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      animation: modalFadeIn 0.3s ease-out;
+      overflow: hidden;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .modal-header {
@@ -88,6 +95,11 @@
       font-size: 16px;
       font-weight: bold;
       color: var(--primary-color);
+      line-height: 1.4;
+    }
+
+    .modal-footer {
+      text-align: right;
     }
 
     .modal-body {
@@ -99,19 +111,18 @@
       margin-bottom: 16px;
     }
 
-    .modal-footer {
-      text-align: right;
+    .modal-btn {
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
     }
 
-    .modal-btn {
-      background-color: var(--secondary-color);
-      color: #ffffff;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 13px;
+    .modal-btn:hover {
+      opacity: 0.9;
     }
 
     .container {
@@ -120,16 +131,16 @@
       width: 100%;
     }
 
-    h1 {
+    .header-container {
       text-align: center;
+      margin: 2px 0 6px 0;
+    }
+
+    h1 {
+      display: inline-block;
       color: var(--primary-color);
-      margin-bottom: 15px;
-      font-size: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      margin: 0;
+      font-size: 20px;
     }
 
     .version-badge {
@@ -141,60 +152,48 @@
       font-weight: normal;
     }
 
-    /* バージョンアップお知らせバナー */
+    /* バージョン更新通知バナー */
     .version-notice {
       background: linear-gradient(135deg, #2980b9, #3498db);
-      color: white;
-      padding: 12px 16px;
+      color: #ffffff;
+      padding: 8px 12px;
       border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 6px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      font-size: 13px;
     }
 
     .version-notice-content {
-      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
     .version-notice-title {
-      font-weight: bold;
-      font-size: 14px;
-      margin-bottom: 2px;
       display: flex;
-      align-items: center;
-      gap: 6px;
+      flex-direction: column;
+      gap: 2px;
     }
 
-    .version-notice-detail {
-      font-size: 12px;
-      opacity: 0.95;
-      line-height: 1.4;
-    }
-
-    .version-notice-btn {
-      background-color: white;
-      color: #2980b9;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 12px;
+    .version-notice-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: 4px;
       cursor: pointer;
+      font-size: 12px;
       white-space: nowrap;
-      transition: background-color 0.2s, transform 0.1s;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      transition: background 0.2s;
     }
 
-    .version-notice-btn:hover {
-      background-color: #f8fafc;
+    .version-notice-close:hover {
+      background: rgba(255, 255, 255, 0.35);
     }
 
-    .version-notice-btn:active {
-      transform: scale(0.96);
-    }
 
     .mode-tabs {
       display: flex;
@@ -204,13 +203,13 @@
     }
 
     .tab-btn {
-      padding: 8px 18px;
-      border: 2px solid var(--secondary-color);
+      padding: 5px 16px;
+      border: 1.5px solid var(--secondary-color);
       background-color: #fff;
       color: var(--secondary-color);
       font-weight: bold;
       font-size: 14px;
-      border-radius: 25px;
+      border-radius: 16px;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -515,8 +514,8 @@
   </div>
 
   <div class="header-container">
-    <h1>無機いろ暗記倶楽部
-    <span class="version-badge" id="versionBadge">v1.1.0</span></h1>
+    <h1>無機いろ暗記倶楽部</h1>
+    <span class="version-badge" id="versionBadge">v1.1.1</span>
   </div>
 
   <!-- モード切替 -->
@@ -586,11 +585,18 @@
   // ==========================================
   // バージョン管理・更新履歴設定
   // ==========================================
-  const CURRENT_VERSION = "1.1.0";
+  const CURRENT_VERSION = "1.1.1";
   const STORAGE_KEY_VERSION = "inorganic_color_app_version";
 
   // 更新履歴データ（配列形式：新しい順）
   const UPDATES_HISTORY = [
+    {
+      version: "1.1.1",
+      date: "2026-09-10",
+      changes: [
+        "細かな体裁を整えました"
+      ]
+    },
     {
       version: "1.1.0",
       date: "2026-09-06",
